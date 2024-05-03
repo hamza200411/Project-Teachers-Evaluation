@@ -70,23 +70,23 @@ class Sidebar(ctk.CTkToplevel):
         self.title("نظام تقييم الاداء الالكتروني")
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
-        self.config(bg='#DDF2FD')
+        self.config(bg='#fff')
 
         self.menu_icon = tk.PhotoImage(file='icons/menu.png')
         self.close_icon = tk.PhotoImage(file='icons/close.png')
 
         # Header
-        header = tk.Frame(self, bg="#164863", height=60, highlightthickness=6)
+        header = tk.Frame(self, bg="#141E46", height=60, highlightthickness=6)
         header.pack(side='top', fill='x')
 
-        self.menu_button = tk.Button(header, bd=0, image=self.menu_icon, activebackground="#164863", fg='white', bg='#164863', font=('thesans', 20), command=self.menu_toggle)
+        self.menu_button = tk.Button(header, bd=0, image=self.menu_icon, activebackground="#141E46", fg='white', bg='#141E46', font=('thesans', 20), command=self.menu_toggle)
         self.menu_button.pack(side='left')
 
-        header_label = tk.Label(header, bg="#164863", fg='#FFC55A', text="نظام تقييم الاداء الالكتروني", font=('thesans', 20))
+        header_label = tk.Label(header, bg="#141E46", fg='#41B06E', text="نظام تقييم الاداء الالكتروني", font=('thesans', 20))
         header_label.pack()
 
         # Menu items
-        self.menu_item_frame = tk.Frame(self, bg="#164863", highlightthickness=6, height=100)
+        self.menu_item_frame = tk.Frame(self, bg="#141E46", highlightthickness=6, height=100)
 
         # item1_btn = tk.Button(self.menu_item_frame, text='المحور الأول')
         # item2_btn = tk.Button(self.menu_item_frame, text='المحور الثاني')
@@ -97,19 +97,19 @@ class Sidebar(ctk.CTkToplevel):
         logout_btn = tk.Button(self.menu_item_frame, text='تسجيل الخروج', command=self.logout)
 
         #المعلومات التي تظهر في الشاشة الرئيسية
-        self.info_frame = tk.Frame(self, width=500, height=500, bg='#DDF2FD', bd=0)
+        self.info_frame = tk.Frame(self, width=500, height=500, bg='#fff', bd=0)
         self.info_frame.pack(side='top')
 
         username = self.login_window.username_entry.get().capitalize()
-        username_label = tk.Label(self.info_frame, text=f'{username} مرحبا بك ', font=('thesans', 22))
+        username_label = tk.Label(self.info_frame, text=f'{username} مرحبا بك ', font=('thesans', 22), fg='#FF6600')
         username_label.pack(padx=5, pady=5)
 
         for wed in self.info_frame.winfo_children():
-            wed.configure(bg='#DDF2FD')
+            wed.configure(bg='#fff', fg='#141E46')
             
         for widget in self.menu_item_frame.winfo_children():
                 widget.pack_configure(padx=10, pady=2)
-                widget.configure(bd=0, font=('thesans', 16), fg='white', bg='#164863')
+                widget.configure(bd=0, font=('thesans', 16), fg='#41B06E', bg='#141E46')
 
     def logout(self):
         self.destroy()
@@ -122,15 +122,12 @@ class Sidebar(ctk.CTkToplevel):
         if self.menu_button.cget('image') == str(self.menu_icon):
             self.menu_button.config(image=self.close_icon)
             self.menu_item_frame.pack(side='left', fill='y')
-            self.config(bg='#9BBEC8')
             self.info_frame.pack_forget()
 
         elif self.menu_button.cget('image') == str(self.close_icon):
             self.info_frame.pack(side='top')
-            self.config(bg='#DDF2FD')
             self.menu_button.config(image=self.menu_icon)
             self.menu_item_frame.pack_forget()
-
 
 ctk.set_appearance_mode('dark')
 root = ctk.CTk()
