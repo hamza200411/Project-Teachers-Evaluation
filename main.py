@@ -131,6 +131,8 @@ class Sidebar(ctk.CTkToplevel):
             self.menu_button.config(image=self.menu_icon)
             self.menu_item_frame.pack_forget()
 
+
+ctk.set_appearance_mode('dark')
 root = ctk.CTk()
 root.config(bg='#141E46')
 root.iconbitmap('icons/form.ico')
