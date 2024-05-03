@@ -88,10 +88,10 @@ class Sidebar(ctk.CTkToplevel):
         # Menu items
         self.menu_item_frame = tk.Frame(self, bg="#164863", highlightthickness=6, height=100)
 
-        item1_btn = tk.Button(self.menu_item_frame, text='المحور الأول')
-        item2_btn = tk.Button(self.menu_item_frame, text='المحور الثاني')
-        item3_btn = tk.Button(self.menu_item_frame, text='المحور الثالث')
-        item4_btn = tk.Button(self.menu_item_frame, text='المحور الرابع')
+        # item1_btn = tk.Button(self.menu_item_frame, text='المحور الأول')
+        # item2_btn = tk.Button(self.menu_item_frame, text='المحور الثاني')
+        # item3_btn = tk.Button(self.menu_item_frame, text='المحور الثالث')
+        # item4_btn = tk.Button(self.menu_item_frame, text='المحور الرابع')
         result_btn = tk.Button(self.menu_item_frame, text='النتيجة النهائية')
         exit_btn = tk.Button(self.menu_item_frame, text='اغلاق التطبيق', command=exit)
         logout_btn = tk.Button(self.menu_item_frame, text='تسجيل الخروج', command=self.logout)
@@ -106,6 +106,10 @@ class Sidebar(ctk.CTkToplevel):
 
         for wed in self.info_frame.winfo_children():
             wed.configure(bg='#DDF2FD')
+            
+        for widget in self.menu_item_frame.winfo_children():
+                widget.pack_configure(padx=10, pady=2)
+                widget.configure(bd=0, font=('thesans', 16), fg='white', bg='#164863')
 
     def logout(self):
         self.destroy()
@@ -120,9 +124,6 @@ class Sidebar(ctk.CTkToplevel):
             self.menu_item_frame.pack(side='left', fill='y')
             self.config(bg='#9BBEC8')
             self.info_frame.pack_forget()
-            for widget in self.menu_item_frame.winfo_children():
-                widget.pack_configure(padx=10, pady=2)
-                widget.configure(bd=0, font=('thesans', 16), fg='white', bg='#164863')
 
         elif self.menu_button.cget('image') == str(self.close_icon):
             self.info_frame.pack(side='top')

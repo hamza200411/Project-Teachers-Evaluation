@@ -60,8 +60,6 @@ def register():
     password_entry.delete(0, tk.END)
     password_entry2.delete(0, tk.END)
 
-
-
 root = ctk.CTk()
 root.config(bg='#141E46')
 root.geometry("440x390")
