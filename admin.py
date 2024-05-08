@@ -85,7 +85,7 @@ class Admin_Window(ctk.CTkToplevel):
         shortcut_bar = tk.Frame(self, bg='#141E46')
         shortcut_bar.grid(row=0, column=0, sticky='n', columnspan=6, pady=4)
 
-        welcome_label = tk.Label(shortcut_bar, text='مرحبا أدمن', bg='#141E46', fg='#41B06E', font=('thesans', 24))
+        welcome_label = tk.Label(shortcut_bar, text='مرحباأدمن', bg='#141E46', fg='#41B06E', font=('thesans', 24))
         welcome_label.grid(row=0, column=1, pady=6)
 
         new_teacher_btn = tk.Button(shortcut_bar, text="تسجيل تدريسي جديد", bg='#FC6736', fg='white', font=('thesans', 17))
@@ -215,8 +215,6 @@ class new_teacher(ctk.CTkToplevel):
                 "INSERT INTO users (fullname, username, college, department, password) VALUES (%s, %s, %s, %s, %s)",
                 (fullname, username, college, department, password))
             db.commit()
-
-            messagebox.showinfo("Success", "Registration successful.")
 
             # Clear the entry fields
             fullname_entry.delete(0, tk.END)
