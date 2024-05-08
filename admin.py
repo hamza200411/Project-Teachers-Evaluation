@@ -218,7 +218,7 @@ class new_teacher(ctk.CTkToplevel):
 
             messagebox.showinfo("Success", "Registration successful.")
 
-            # Clear the entry fields after registration
+            # Clear the entry fields
             fullname_entry.delete(0, tk.END)
             username_entry.delete(0, tk.END)
             college_name_entry.delete(0, tk.END)
