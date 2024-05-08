@@ -5,11 +5,6 @@ import mysql.connector
 from mysql.connector import Error
 import customtkinter as ctk
 
-# root.title("تسجيل دخول المشرف")
-# root.config(bg='#141E46')
-# root.geometry("380x380")
-# root.resizable(False, False)
-
 class loginwindow:
     def __init__(self, master):
         self.master = master
@@ -17,7 +12,6 @@ class loginwindow:
         self.master.config(bg='#141E46')
         self.master.geometry("380x380")
         self.master.resizable(False, False)
-
 
         self.login_frame = tk.Frame(root, bg='#141E46')
         self.login_frame.place(relx=0.5, rely=0.5, anchor='center')
@@ -127,8 +121,7 @@ class new_teacher(ctk.CTkToplevel):
         register_frame = tk.Frame(self, bg='#141E46')
         register_frame.grid(row=0, column=0)
 
-        welcome_label = tk.Label(register_frame, text="تسجيل تدريسي جديد", fg='#ff6600', bg='#141E46',
-                                 font=('thesans', 20))
+        welcome_label = tk.Label(register_frame, text="تسجيل تدريسي جديد", fg='#ff6600', bg='#141E46', font=('thesans', 20))
         welcome_label.grid(row=0, column=0, padx=6, pady=6, columnspan=2)
 
         fullname_label = tk.Label(register_frame, text="الاسم الكامل", bg='#141E46', fg="white", font=('thesans', 18))
@@ -235,7 +228,6 @@ class new_teacher(ctk.CTkToplevel):
 
             db.close()
         self.register_button.config(command=lambda: register(self))
-
 
 root = ctk.CTk()
 loginwindow = loginwindow(root)
