@@ -75,32 +75,23 @@ class Sidebar(ctk.CTkToplevel):
         self.rowconfigure((0, 2, 3, 4, 5), weight=1)
         self.columnconfigure((0, 1, 2, 3, 4, 5), weight=1)
         self.config(bg='#fff')
-        # self.rowconfigure((0,1,2,3,4,5), weight=1)
-        # self.columnconfigure((0,1,2,3,4,5), weight=1)
 
         self.menu_icon = tk.PhotoImage(file='icons/menu.png')
         self.close_icon = tk.PhotoImage(file='icons/close.png')
 
         # Header
         header = tk.Frame(self, bg="#141E46", height=60, highlightthickness=6)
-        # header.pack(side='top', fill='x')
         header.grid(row=0, column=0, sticky='nwe', columnspan=8)
 
         self.menu_button = tk.Button(header, bd=0, image=self.menu_icon, activebackground="#141E46", fg='white', bg='#141E46', font=('thesans', 20), command=self.menu_toggle)
-        # self.menu_button.pack(side='left')
         self.menu_button.grid(row=0, column=0, sticky='we')
 
         header_label = tk.Label(header, bg="#141E46", fg='#41B06E', text="نظام تقييم الاداء الالكتروني", font=('thesans', 20))
         header_label.place(rely=0.5, relx=0.5, anchor='center')
 
-
         # Menu items
         self.menu_item_frame = tk.Frame(self, bg="#141E46", highlightthickness=6, height=100)
 
-        # item1_btn = tk.Button(self.menu_item_frame, text='المحور الأول')
-        # item2_btn = tk.Button(self.menu_item_frame, text='المحور الثاني')
-        # item3_btn = tk.Button(self.menu_item_frame, text='المحور الثالث')
-        # item4_btn = tk.Button(self.menu_item_frame, text='المحور الرابع')
         result_btn = tk.Button(self.menu_item_frame, text='النتيجة النهائية')
         exit_btn = tk.Button(self.menu_item_frame, text='اغلاق التطبيق', command=exit)
         logout_btn = tk.Button(self.menu_item_frame, text='تسجيل الخروج', command=self.logout)
