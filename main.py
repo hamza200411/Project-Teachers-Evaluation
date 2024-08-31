@@ -88,9 +88,10 @@ class LoginWindow:
             messagebox.showerror("Error", "Error, Please connect to the internet")
             print("Error while connecting to MySQL", e)
 
-        finally:
-            if self.db.is_connected():
-                self.db.close()
+    # ميصير نغلق اتصال قاعدة البيانات لان بقية الكلاسات ايضا تستخدم هذا الاتصال
+    # finally:
+    #     if self.db.is_connected():
+    #         self.db.close()
 
 
 # sidebar and header class
@@ -140,12 +141,12 @@ class Sidebar(ctk.CTkToplevel):
                             (username,))
         user_info = self.cursor.fetchone()
 
-        id = user_info[0]
+        # id = user_info[0]
         fullname = user_info[1]
         message = f'مرحبا بك {fullname}'
         college = user_info[2]
         department = user_info[3]
-        created_at = user_info[4].strftime('%d-%m-%Y')
+        # created_at = user_info[4].strftime('%d-%m-%Y')
 
         # userinfo_label = tk.Label(self.info_frame, text=f'{user_info}', font=('thesans', 18), fg='#141E46')
         # userinfo_label.grid(row=2, column=0, sticky='news')
@@ -167,11 +168,11 @@ class Sidebar(ctk.CTkToplevel):
         # id_label.grid(row=5, column=0, sticky='news')
 
         next_btn = tk.Button(self.info_frame, text='المحور الاول', font=('thesans', 18), fg='#FF6600',
-                             command=self.changeToSide)
+                             command=self.changetooside)
         next_btn.grid(row=6, column=0, sticky='news')
 
-        # final_result_btn = tk.Button(self.info_frame, text='النتيجة النهائية', font=('thesans', 18), fg='#FF6600', command=self.changeToFinaResult)
-        # final_result_btn.grid(row=7, column=0, sticky='news')
+        final_result_btn = tk.Button(self.info_frame, text='النتيجة النهائية', font=('thesans', 18), fg='#FF6600', command=self.change_to_final_result)
+        final_result_btn.grid(row=7, column=0, sticky='news')
 
         for wed in self.info_frame.winfo_children():
             wed.configure(bg='#fff', fg='#141E46')
@@ -180,15 +181,15 @@ class Sidebar(ctk.CTkToplevel):
             widget.grid_configure(padx=10, pady=2)
             widget.configure(bd=0, font=('thesans', 16), fg='#41B06E', bg='#141E46')
 
-    def changeToSide(self):
+    def changetooside(self):
         self.withdraw()
         first_side_window = FirstSidewindow(self.master, self.login_window)
+        first_side_window.deiconify()
 
-
-    # def changeToFinaResult(self):
-    #     self.withdraw()
-    #     final_result_window = FinalResult(self.master, self.login_window)
-    #     final_result_window.deiconify()
+    def change_to_final_result(self):
+        self.withdraw()
+        final_result_window = FinalResult(self.master, self.login_window)
+        final_result_window.deiconify()
 
     def logout(self):
         self.destroy()
@@ -197,10 +198,12 @@ class Sidebar(ctk.CTkToplevel):
     def exit(self):
         self.quit()
 
-    def about(self):
+    @staticmethod
+    def about():
         messagebox.showinfo('حول', 'نظام تقييم الاداء الالكتروني\n كلية علوم الحاسوب والرياضيات\n الاصدار 1.0')
 
-    def help(self):
+    @staticmethod
+    def help():
         messagebox.showinfo('المساعدة',
                             'طريقة استخدام النظام والتقديم اولا يجب ملئ جميع المحاور ومن ثم الحصول على نتيجة التقييم وبعدها لايمكن التقديم مرة اخرى الا بعد سنة وحسب الموعد المقرر من قبل الكلية ')
 
@@ -221,6 +224,7 @@ class FirstSidewindow(ctk.CTkToplevel):
     def __init__(self, master, login_window):
         super().__init__(master)
         self.login_window = login_window
+        self.db = login_window.db
         self.geometry("900x700+350+30")
         self.title(" المحور الاول")
         self.rowconfigure(0, weight=1)
@@ -314,7 +318,8 @@ class FirstSidewindow(ctk.CTkToplevel):
                          font=("thesans", 16))
         lab13.place(x=510, y=450)
 
-        lab14 = tk.Label(self, text="(20د):80%فأكثر(16د):70-79%(12د):60-69%(8د):50-59%(4د):دون ذلك", font=("thesans", 16))
+        lab14 = tk.Label(self, text="(20د):80%فأكثر(16د):70-79%(12د):60-69%(8د):50-59%(4د):دون ذلك",
+                         font=("thesans", 16))
         lab14.place(x=510, y=500)
 
         self.one_lab14var = tk.IntVar()
@@ -374,20 +379,12 @@ class FirstSidewindow(ctk.CTkToplevel):
         lab21chek = tk.Checkbutton(self, variable=self.one_lab21var)
         lab21chek.place(x=550, y=840)
 
-        Button_complate = tk.Button(self, text="gتكملة المحور الاول ", command=self.comp)
-        Button_complate.place(x=300, y=300)
+        button_complate = tk.Button(self, text="gتكملة المحور الاول ", command=self.comp)
+        button_complate.place(x=300, y=300)
 
-        calc_button = tk.Button(self, text="حساب النقاط")
-        calc_button.place(x=50, y=650)
-
-        self.score_label = tk.Label(self, text="النقاط: 0", font=("thesans", 20))
-        self.score_label.place(x=200, y=650)
-
-        def show_score():
-            score = self.calculate_fisrt_side_score()
-            self.score_label.config(text=f"النقاط: {score}", font=("thesans", 20))
-
-        calc_button.config(command=show_score)
+    def show_score(self):
+        score = self.calculate_fisrt_side_score()
+        self.score_label.config(text=f"النقاط: {score}", font=("thesans", 20))
 
     def comp(self):
         self.withdraw()
@@ -460,6 +457,17 @@ class FirstSidewindow(ctk.CTkToplevel):
 
         btgo = tk.Button(self.new_window, text=" المحور الثاني   ", command=self.go2)
         btgo.place(x=850, y=650)
+
+        calc_button = tk.Button(self.new_window, text="حساب النقاط", command=self.calculate_fisrt_side_score)
+        calc_button.place(x=800, y=650)
+
+        self.score_label = tk.Label(self.new_window, text="النقاط: 0", font=("thesans", 20))
+        self.score_label.place(x=800, y=700)
+
+        insert_button = tk.Button(self.new_window, text="حفظ النتيجة", command=self.insert_to_database)
+        insert_button.place(x=800, y=750)
+
+        calc_button.config(command=self.show_score)
 
     def back(self):
         self.destroy()
@@ -534,11 +542,27 @@ class FirstSidewindow(ctk.CTkToplevel):
 
         return score
 
+        # اضافة النتيجة الى قاعدة البيانات للمحور الاول
+
+    def insert_to_database(self):
+        score = self.calculate_fisrt_side_score()
+        username = self.login_window.username_entry.get()
+        self.cursor = self.db.cursor()
+        self.cursor.execute("SELECT id FROM users WHERE username=%s", (username,))
+        user_id = self.cursor.fetchone()[0]
+
+        self.cursor.execute("INSERT INTO results (user_id, side_one_score) VALUES (%s, %s)", (user_id, score))
+        self.db.commit()
+
+        if self.cursor.rowcount > 0:
+            messagebox.showinfo("Success", "تم حفظ النتيجة بنجاح")
+
 
 class SecondSidewindow(ctk.CTkToplevel):
     def __init__(self, master, login_window):
         super().__init__(master)
         self.login_window = login_window
+        self.db = login_window.db
         self.geometry("900x700+350+30")
         self.title(" المحور الثاني")
         self.rowconfigure(0, weight=1)
@@ -812,6 +836,10 @@ class SecondSidewindow(ctk.CTkToplevel):
         self.score_label = tk.Label(self, text="النقاط: 0", font=("thesans", 20))
         self.score_label.place(x=200, y=650)
 
+        insert_button = tk.Button(self, text="حفظ النتيجة", command=self.insert_to_database)
+        insert_button.place(x=50, y=700)
+
+
         def show_score():
             score = self.calculate_second_side_score()
             self.score_label.config(text=f"النقاط: {score}")
@@ -1057,7 +1085,7 @@ class SecondSidewindow(ctk.CTkToplevel):
         if self.lab35var.get():
             score += 10
 
-        #تكملة المحور الثاني
+        # تكملة المحور الثاني
         if hasattr(self, 'new_window2'):
             if self.new_window2.lab36var.get():
                 score += 10
@@ -1107,11 +1135,25 @@ class SecondSidewindow(ctk.CTkToplevel):
                 score += 10
         return score
 
+    def insert_to_database(self):
+        score = self.calculate_second_side_score()
+        username = self.login_window.username_entry.get()
+        self.cursor = self.db.cursor()
+        self.cursor.execute("SELECT id FROM users WHERE username=%s", (username,))
+        user_id = self.cursor.fetchone()[0]
+
+        self.cursor.execute("UPDATE results SET side_two_score = %s WHERE user_id = %s", (score, user_id))
+        self.db.commit()
+
+        if self.cursor.rowcount > 0:
+            messagebox.showinfo("Success", "تم حفظ النتيجة بنجاح")
+
 
 class TherdSidewindow(ctk.CTkToplevel):
     def __init__(self, master, login_window):
         super().__init__(master)
         self.login_window = login_window
+        self.db = login_window.db
         self.geometry("900x700+350+30")
         self.title(" المحور الثالث")
         self.rowconfigure(0, weight=1)
@@ -1224,6 +1266,9 @@ class TherdSidewindow(ctk.CTkToplevel):
         self.score_label = tk.Label(self, text="النقاط: 0", font=("thesans", 20))
         self.score_label.place(x=200, y=650)
 
+        insert_button = tk.Button(self, text="حفظ النتيجة", command=self.insert_to_database)
+        insert_button.place(x=50, y=700)
+
         def show_score():
             score = self.calculate_third_side_score()
             self.score_label.config(text=f"النقاط: {score}", font=("thesans", 20))
@@ -1268,10 +1313,25 @@ class TherdSidewindow(ctk.CTkToplevel):
             score += 10
         return score
 
+    def insert_to_database(self):
+        score = self.calculate_third_side_score()
+        username = self.login_window.username_entry.get()
+        self.cursor = self.db.cursor()
+        self.cursor.execute("SELECT id FROM users WHERE username=%s", (username,))
+        user_id = self.cursor.fetchone()[0]
+
+        self.cursor.execute("UPDATE results SET side_three_score = %s WHERE user_id = %s", (score, user_id))
+        self.db.commit()
+
+        if self.cursor.rowcount > 0:
+            messagebox.showinfo("Success", "تم حفظ النتيجة بنجاح")
+
+
 class ForthSidewindow(ctk.CTkToplevel):
     def __init__(self, master, login_window):
         super().__init__(master)
         self.login_window = login_window
+        self.db = login_window.db
         self.geometry("900x700+350+30")
         self.title(" المحور الرابع")
         self.rowconfigure(0, weight=1)
@@ -1323,6 +1383,9 @@ class ForthSidewindow(ctk.CTkToplevel):
         self.score_label = tk.Label(self, text="النقاط: 0", font=("thesans", 20))
         self.score_label.place(x=200, y=650)
 
+        insert_button = tk.Button(self, text="حفظ النتيجة", command=self.insert_to_database)
+        insert_button.place(x=50, y=700)
+
         self.final_result_button = tk.Button(self, text='النتيجة النهائية', command=self.changetofinalresult)
         self.final_result_button.pack()
 
@@ -1334,8 +1397,8 @@ class ForthSidewindow(ctk.CTkToplevel):
 
     def changetofinalresult(self):
         self.destroy()
-        self.finalresult = FinalResult(self.master, self.login_window)
-        self.finalresult.deiconify()
+        finalresult = FinalResult(self.master, self.login_window)
+        finalresult.deiconify()
 
     def calculate_forth_side_score(self):
         score = 0
@@ -1352,30 +1415,83 @@ class ForthSidewindow(ctk.CTkToplevel):
             score += 10
         return score
 
+    def insert_to_database(self):
+        score = self.calculate_forth_side_score()
+        username = self.login_window.username_entry.get()
+        self.cursor = self.db.cursor()
+        self.cursor.execute("SELECT id FROM users WHERE username=%s", (username,))
+        user_id = self.cursor.fetchone()[0]
+
+        self.cursor.execute("UPDATE results SET side_four_score = %s WHERE user_id = %s", (score, user_id))
+        self.db.commit()
+
+        if self.cursor.rowcount > 0:
+            messagebox.showinfo("Success", "تم حفظ النتيجة بنجاح")
+
 class FinalResult(ctk.CTkToplevel):
     def __init__(self, master, login_window):
         super().__init__(master)
         self.login_window = login_window
-        self.geometry("900x700+350+30")
+        self.db = login_window.db
+        self.geometry("600x400")
+        self.config(bg='#fff')
         self.title('final result')
+        self.resizable(0,0)
         self.username = self.login_window.username_entry.get()
 
         lab1 = tk.Label(self, text="النتيجة النهائية", font=("thesans", 20, "bold"))
         lab1.pack()
 
-        display_button = tk.Button(self, text='عرض النتيجة النهائية', command=self.display_final_result)
+        insert_button = tk.Button(self, text='حفظ النتيجة', command=self.insert_final_result, font=("thesans", 16, "bold"))
+        insert_button.pack()
+
+        display_button = tk.Button(self, text='عرض النتيجة النهائية', command=self.display_final_result, font=("thesans", 16, "bold"))
         display_button.pack()
 
-    def display_final_result(self):
-            first_side_score = self.firstsidewindow.calculate_fisrt_side_score()
-            second_side_score = self.secondsidewindow.calculate_second_side_score()
-            third_side_score = self.therdsidewindow.calculate_third_side_score()
-            forth_side_score = self.forthsidewindow.calculate_forth_side_score()
-            total_score = first_side_score + second_side_score + third_side_score + forth_side_score
-            result_label.config(text=f'نتيجة الاختبار النهائية هي {total_score}')
-            result_label = tk.Label(self, text='', font=('thesans', 20))
-            result_label.place(x=800, y=100)
+    def insert_final_result(self):
+        username = self.login_window.username_entry.get()
+        self.cursor = self.db.cursor()
+        self.cursor.execute("SELECT id FROM users WHERE username=%s", (username,))
+        user_id = self.cursor.fetchone()[0]
 
+        self.cursor.execute("SELECT side_one_score, side_two_score, side_three_score, side_four_score FROM results WHERE user_id = %s", (user_id,))
+        result = self.cursor.fetchone()
+        total_score = sum(result)
+        self.cursor.execute("UPDATE results SET total_score = %s WHERE user_id = %s", (total_score, user_id))
+        self.db.commit()
+
+        if self.cursor.rowcount > 0:
+            messagebox.showinfo("Success", "تم حفظ النتيجة النهائية بنجاح")
+
+    def display_final_result(self):
+        username = self.login_window.username_entry.get()
+        self.cursor = self.db.cursor()
+        self.cursor.execute("SELECT id FROM users WHERE username=%s", (username,))
+        user_id = self.cursor.fetchone()[0]
+
+        self.cursor.execute("SELECT side_one_score, side_two_score, side_three_score, side_four_score, total_score FROM results WHERE user_id = %s", (user_id,))
+        result = self.cursor.fetchone()
+
+        side_one_score = result[0]
+        side_two_score = result[1]
+        side_three_score = result[2]
+        side_four_score = result[3]
+        total_score = result[4]
+
+        first_side_label = tk.Label(self, text=f"النقاط المحور الاول: {side_one_score}", font=("thesans", 16, "bold"))
+        first_side_label.pack()
+
+        second_side_label = tk.Label(self, text=f" المحور الثاني: {side_two_score}", font=("thesans", 16, "bold"))
+        second_side_label.pack()
+
+        third_side_label = tk.Label(self, text=f" المحور الثالث: {side_three_score}", font=("thesans", 16, "bold"))
+        third_side_label.pack()
+
+        forth_side_label = tk.Label(self, text=f" المحور الرابع: {side_four_score}", font=("thesans", 16, "bold"))
+        forth_side_label.pack()
+
+        total_score_label = tk.Label(self, text=f" النهائية: {total_score}", font=("thesans", 16, "bold"))
+        total_score_label.pack()
 
 ctk.set_appearance_mode('dark')
 root = ctk.CTk()
