@@ -63,6 +63,7 @@ class loginwindow:
                 messagebox.showerror("Error", f"Error, Please connect to the internet \n {e}")
                 print("Error while connecting to MySQL", e)
 
+            finally:
                 if self.db.is_connected():
                     self.cursor.close()
                     self.db.close()
@@ -88,8 +89,8 @@ class Admin_Window(ctk.CTkToplevel):
         new_teacher_btn = tk.Button(shortcut_bar, text="تسجيل تدريسي جديد", bg='#FC6736', fg='white', font=('thesans', 17))
         new_teacher_btn.grid(row=1, column=2)
 
-        search_teacher_btn = tk.Button(shortcut_bar, text="البحث عن تقييم التدريسيين", bg='#FC6736', fg='white', font=('thesans', 17))
-        search_teacher_btn.grid(row=1, column=0)
+        search_result_btn = tk.Button(shortcut_bar, text="البحث عن تقييم التدريسيين", bg='#FC6736', fg='white', font=('thesans', 17))
+        search_result_btn.grid(row=1, column=0)
 
         view_teacher_btn = tk.Button(shortcut_bar, text="قاعدة بيانات التدريسين ", bg='#FC6736', fg='white', font=('thesans', 17))
         view_teacher_btn.grid(row=1, column=1)
@@ -106,8 +107,13 @@ class Admin_Window(ctk.CTkToplevel):
             self.withdraw()
             show_teachers(self)
 
+        def view_results():
+            self.withdraw()
+            show_results(self)
+
         new_teacher_btn.config(command=lambda: move_to_new_teacher())
         view_teacher_btn.config(command=lambda: view_teachers())
+        search_result_btn.config(command=lambda: view_results())
 
 class new_teacher(ctk.CTkToplevel):
     def __init__(self, Admin_Window):
@@ -296,6 +302,75 @@ class show_teachers(ctk.CTkToplevel):
             self.db.close()
             self.cursor.close()
 
+class show_results(ctk.CTkToplevel):
+    def __init__(self, Admin_Window):
+        super().__init__(Admin_Window)
+        self.Admin_Window = Admin_Window
+        self.config(bg="#141E46")
+        self.geometry("940x400")
+        self.resizable(False, False)
+        self.title("عرض تقييم التدريسيين")
+        self.db = database_connection()
+
+        self.cursor = self.db.cursor()
+        self.cursor.execute("SELECT * FROM results")
+        records = self.cursor.fetchall()
+
+        search_frame = tk.Frame(self, bg='#141E46')
+        search_frame.grid(row=0, column=0)
+
+        self.search_label = tk.Label(search_frame, text="نتائج تقييم التدريسين", fg='#ff6600', bg='#141E46',
+                                     font=('thesans', 20))
+        self.search_label.grid(row=0, column=0, padx=6, pady=6, columnspan=2)
+
+        self.search_entry = tk.Entry(search_frame, bd=1, relief='solid', font=('thesans', 18))
+        self.search_entry.grid(row=1, column=0, padx=6, pady=6)
+
+        self.search_button = tk.Button(search_frame, text="بحث", width=4, bg='#ff6600', fg='white', relief='flat',
+                                       font=('thesans', 18))
+        self.search_button.grid(row=1, column=1, padx=5, pady=5)
+
+        self.tree_frame = tk.Frame(self, bg='#141E46')
+        self.tree_frame.grid(row=1, column=0)
+
+        self.tree = ttk.Treeview(self.tree_frame, columns=(1, 2, 4, 5, 6, 7, 8), show='headings', height=10)
+        self.tree.grid(row=0, column=0)
+        self.tree.heading(1, text='ID')
+        self.tree.heading(2, text='اسم المستخدم')
+        self.tree.heading(4, text='المحور الاول')
+        self.tree.heading(5, text='المحور الثاني')
+        self.tree.heading(6, text='المحور الثالث')
+        self.tree.heading(7, text='المحور الرابع')
+        self.tree.heading(8, text='النتيجة النهائية')
+
+        for record in records:
+            self.tree.insert('', 'end', values=record)
+
+        def search_for_result():
+            self.cursor = self.db.cursor()
+            self.search = self.search_entry.get()
+            username = self.search_entry.get()
+            self.cursor.execute("SELECT * FROM results WHERE results.user_id LIKE %s", ('%' + self.search + '%',))
+            records = self.cursor.fetchall()
+            if records == []:
+                messagebox.showinfo('Not Found', 'No record found')
+            else:
+                for i in self.tree.get_children():
+                    self.tree.delete(i)
+                for record in records:
+                    self.tree.insert('', 'end', values=record)
+
+        self.search_button.config(command=search_for_result())
+
+        self.return_btn = tk.Button(self.tree_frame, text='العودة الى الرئيسية', width=20, bg='#ff6600', fg='white',
+                                    relief='flat', font=('thesans', 18))
+        self.return_btn.grid(row=1, column=0, padx=5, pady=5)
+
+        def return_home():
+            self.master.deiconify()
+            self.destroy()
+
+        self.return_btn.config(command=lambda: return_home())
 
 ctk.set_appearance_mode('dark')
 root = ctk.CTk()

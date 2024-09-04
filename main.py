@@ -1,3 +1,4 @@
+import datetime
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
@@ -34,7 +35,7 @@ class LoginWindow:
     def __init__(self, master):
         self.master = master
         self.master.title("نظام تقييم الاداء الالكتروني")
-        self.master.geometry('400x350')
+        self.master.geometry('400x350+600+200')
         self.master.resizable(False, False)
 
         self.welcome_label = tk.Label(master, text="نظام تقييم اداء تدريسي\n كلية علوم الحاسوب والرياضيات",
@@ -99,7 +100,7 @@ class Sidebar(ctk.CTkToplevel):
     def __init__(self, master, login_window):
         super().__init__(master)
         self.login_window = login_window
-        self.geometry("600x400")
+        self.geometry("600x400+500+200")
         self.title("نظام تقييم الاداء الالكتروني")
         self.rowconfigure((0, 2, 3, 4, 5, 6), weight=1)
         self.columnconfigure((0, 1, 2, 3, 4, 5), weight=1)
@@ -161,18 +162,35 @@ class Sidebar(ctk.CTkToplevel):
         department_label = tk.Label(self.info_frame, text=f'{department} :القسم', font=('thesans', 18), fg='#141E46')
         department_label.grid(row=3, column=0, sticky='news')
 
+        alert_label = tk.Label(self.info_frame, text="لقد قمت بملئ المحاور مسبقا لذا يمكنك الحصول على النتيجة فقط", font=('thesans', 18), fg='#141E46')
+
         # created_at_label = tk.Label(self.info_frame, text=f'تاريخ التسجيل: {created_at}', font=('thesans', 18), fg='#141E46')
         # created_at_label.grid(row=4, column=0, sticky='news')
 
         # id_label = tk.Label(self.info_frame, text=f'رقم الهوية: {id}', font=('thesans', 18), fg='#141E46')
         # id_label.grid(row=5, column=0, sticky='news')
 
-        next_btn = tk.Button(self.info_frame, text='المحور الاول', font=('thesans', 18), fg='#FF6600',
-                             command=self.changetooside)
-        next_btn.grid(row=6, column=0, sticky='news')
+        start_date = '2024-9-01'
+        end_date = '2024-10-30'
 
-        final_result_btn = tk.Button(self.info_frame, text='النتيجة النهائية', font=('thesans', 18), fg='#FF6600', command=self.change_to_final_result)
-        final_result_btn.grid(row=7, column=0, sticky='news')
+        #check if the user has already submitted the evaluation
+        self.cursor.execute("SELECT * FROM results WHERE user_id=%s", (user_info[0],))
+        result = self.cursor.fetchone()
+        if result:
+            alert_label.grid(row=6, column=0, sticky='news')
+            final_result_btn = tk.Button(self.info_frame, text='النتيجة النهائية', font=('thesans', 18), fg='#FF6600',
+                                         command=self.change_to_final_result)
+            final_result_btn.grid(row=7, column=0, sticky='news')
+        else:
+            if datetime.datetime.now() < datetime.datetime.strptime(start_date, '%Y-%m-%d'):
+                alert_label = tk.Label(self.info_frame, text=f'التقديم سيكون متاحا من تاريخ {start_date}', font=('thesans', 18), fg='#141E46')
+                alert_label.grid(row=6, column=0, sticky='news')
+            elif datetime.datetime.now() > datetime.datetime.strptime(end_date, '%Y-%m-%d'):
+                alert_label = tk.Label(self.info_frame, text=f'تم انتهاء التقديم في تاريخ {end_date}', font=('thesans', 18), fg='#141E46')
+                alert_label.grid(row=6, column=0, sticky='news')
+            else:
+                next_btn = tk.Button(self.info_frame, text='المحور الاول', font=('thesans', 18), fg='#FF6600', command=self.changetooside)
+                next_btn.grid(row=6, column=0, sticky='news')
 
         for wed in self.info_frame.winfo_children():
             wed.configure(bg='#fff', fg='#141E46')
@@ -180,6 +198,11 @@ class Sidebar(ctk.CTkToplevel):
         for widget in self.menu_item_frame.winfo_children():
             widget.grid_configure(padx=10, pady=2)
             widget.configure(bd=0, font=('thesans', 16), fg='#41B06E', bg='#141E46')
+
+    def changetofifthside(self):
+        self.withdraw()
+        fifth_side_window = fifthsidewindow(self.master, self.login_window)
+        fifth_side_window.deiconify()
 
     def changetooside(self):
         self.withdraw()
@@ -225,14 +248,11 @@ class FirstSidewindow(ctk.CTkToplevel):
         super().__init__(master)
         self.login_window = login_window
         self.db = login_window.db
-        self.geometry("900x700+350+30")
-        self.title(" المحور الاول")
+        self.geometry("900x640+350+30")
+        self.title("المحور الاول")
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
-        self.config(bg='#DDF2FD')
-
-        # lab1 = tk.Label(self, text="المحور الاول")
-        # lab1.pack()
+        self.config(bg='#141E46')
 
         # btback = tk.Button(self, text="الرجوع الى قائمة الرئيسية ",command=self.back)
         # btback.pack()
@@ -241,67 +261,67 @@ class FirstSidewindow(ctk.CTkToplevel):
         # btback2.place(x=50, y=650)
 
         lab1 = tk.Label(self, text=" المحور الاول :التدريس (40%) يملى من قبل اللجنة العلمية",
-                        font=("thesans", 20, "bold"))
+                        font=("thesans", 20), fg="#ff6600", bg="#141E46")
         lab1.place(x=270, y=20)
 
         lab2 = tk.Label(self,
                         text="عددالمقررات التي قام بتدريسها تمنح10د لكل مقرر دراسي (اولية او عليا) (نظري او عملي)",
-                        font=("thesans", 16, "bold"))
+                        font=("thesans", 15), fg="#41B06E", bg="#141E46")
         lab2.place(x=470, y=100)
 
-        lab3 = tk.Label(self, text="10د/مقرر سنويالدراسات الاولية", font=("thesans", 16))
+        lab3 = tk.Label(self, text="10د/مقرر سنويالدراسات الاولية", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab3.place(x=890, y=150)
 
         self.one_lab3var = tk.BooleanVar()
         lab3check = tk.Checkbutton(self, variable=self.one_lab3var)
         lab3check.place(x=850, y=150)
 
-        lab4 = tk.Label(self, text="الدراسات العليا", font=("thesans", 16))
+        lab4 = tk.Label(self, text="الدراسات العليا", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab4.place(x=730, y=150)
 
         self.one_lab4var = tk.BooleanVar()
         lab4check = tk.Checkbutton(self, variable=self.one_lab4var)
         lab4check.place(x=690, y=150)
 
-        lab5 = tk.Label(self, text="5د/مقرر فصليالدراسات الاولية", font=("thesans", 16))
+        lab5 = tk.Label(self, text="5د/مقرر فصليالدراسات الاولية", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab5.place(x=890, y=200)
 
         self.one_lab5var = tk.BooleanVar()
         lab5check = tk.Checkbutton(self, variable=self.one_lab5var)
         lab5check.place(x=850, y=200)
 
-        lab6 = tk.Label(self, text="الدراسات العليا", font=("thesans", 16))
+        lab6 = tk.Label(self, text="الدراسات العليا", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab6.place(x=730, y=200)
 
         self.one_lab6var = tk.BooleanVar()
         lab6check = tk.Checkbutton(self, variable=self.one_lab6var)
         lab6check.place(x=690, y=200)
 
-        lab7 = tk.Label(self, text="للتدريسي الاداريوالمتفرغين جزئيا لاغراض الدراسة", font=("thesans", 16, "bold"))
+        lab7 = tk.Label(self, text="للتدريسي الاداري والمتفرغين جزئيا لاغراض الدراسة", font=("thesans", 15), fg="#41B06E", bg="#141E46")
         lab7.place(x=755, y=250)
 
-        lab8 = tk.Label(self, text="20د/مقرر سنويالدراسات الاولية", font=("thesans", 16))
+        lab8 = tk.Label(self, text="20د/مقرر سنويا لدراسات الاولية", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab8.place(x=890, y=300)
 
         self.one_lab8var = tk.BooleanVar()
         lab8check = tk.Checkbutton(self, variable=self.one_lab8var)
         lab8check.place(x=850, y=300)
 
-        lab9 = tk.Label(self, text="الدراسات العليا", font=("thesans", 16))
+        lab9 = tk.Label(self, text="الدراسات العليا", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab9.place(x=730, y=300)
 
         self.one_lab9var = tk.BooleanVar()
         lab9check = tk.Checkbutton(self, variable=self.one_lab9var)
         lab9check.place(x=690, y=300)
 
-        lab10 = tk.Label(self, text="10د/مقرر فصليالدراسات الاولية", font=("thesans", 16))
+        lab10 = tk.Label(self, text="10د/مقرر فصلي الدراسات الاولية", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab10.place(x=890, y=350)
 
         self.one_lab10var = tk.BooleanVar()
         lab10check = tk.Checkbutton(self, variable=self.one_lab10var)
         lab10check.place(x=850, y=350)
 
-        lab11 = tk.Label(self, text="الدراسات العليا", font=("thesans", 16))
+        lab11 = tk.Label(self, text="الدراسات العليا", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab11.place(x=730, y=350)
 
         self.one_lab11var = tk.BooleanVar()
@@ -310,16 +330,16 @@ class FirstSidewindow(ctk.CTkToplevel):
 
         lab12 = tk.Label(self,
                          text="يعتمد كل (2) نشاط (رياضي , فني, كشفي, ثقافي ) مادة دراسية واحدةلتدريسي النشاطات الطلابية",
-                         font=("thesans", 16), bg="red")
+                         font=("thesans", 15), fg="#ff6600", bg="#141E46")
         lab12.place(x=470, y=400)
 
         lab13 = tk.Label(self,
-                         text="ادارة الصف والعلاقة مع الطلبة واثارة دافعيتهممن خلال نسبة الاستبيان تمنح الدرجة كالاتي",
-                         font=("thesans", 16))
+                         text="ادارة الصف والعلاقة مع الطلبة واثارة دافعيتهم من خلال نسبة الاستبيان تمنح الدرجة كالاتي",
+                         font=("thesans", 15), fg="#41B06E", bg="#141E46")
         lab13.place(x=510, y=450)
 
         lab14 = tk.Label(self, text="(20د):80%فأكثر(16د):70-79%(12د):60-69%(8د):50-59%(4د):دون ذلك",
-                         font=("thesans", 16))
+                         font=("thesans", 15), fg="#fff", bg="#141E46")
         lab14.place(x=510, y=500)
 
         self.one_lab14var = tk.IntVar()
@@ -327,20 +347,20 @@ class FirstSidewindow(ctk.CTkToplevel):
         lab14combo.place(x=350, y=505)
 
         lab15 = tk.Label(self,
-                         text="التعليم المدمج:طرائق التدريسوالوسائل الحديثة في ايصال المعلومات والمعارف والمهارات من منصات الكترونية ما هي",
-                         font=("thesans", 16), bg="red")
+                         text="التعليم المدمج:طرائق التدريس والوسائل الحديثة في ايصال المعلومات والمعارف والمهارات من منصات الكترونية ما هي",
+                         font=("thesans", 15), fg="#41B06E", bg="#141E46")
         lab15.place(x=340, y=550)
 
         lab16 = tk.Label(self,
                          text="يستخدم طرائق تدريس متعددة (المحاضرة ، المناقشة ، الاستقصاء ، العصف الذهني ، غيرها)",
-                         font=("thesans", 16))
+                         font=("thesans", 15), fg="#fff", bg="#141E46")
         lab16.place(x=500, y=600)
 
         self.one_lab16var = tk.BooleanVar()
         lab16chek = tk.Checkbutton(self, variable=self.one_lab16var)
         lab16chek.place(x=450, y=600)
 
-        lab17 = tk.Label(self, text="يستخدم الامثلة التوضيحية والتطبيقية لأثراء المادة التعليمية", font=("thesans", 16))
+        lab17 = tk.Label(self, text="يستخدم الامثلة التوضيحية والتطبيقية لأثراء المادة التعليمية", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab17.place(x=730, y=650)
 
         self.one_lab17var = tk.BooleanVar()
@@ -348,7 +368,7 @@ class FirstSidewindow(ctk.CTkToplevel):
         lab17chek.place(x=700, y=650)
 
         lab18 = tk.Label(self, text="يستخدم وسائل الإيضاح او عرض افلام علمية متخصصة او اي وسيلة اخرى.",
-                         font=("thesans", 16))
+                         font=("thesans", 15), fg="#fff", bg="#141E46")
         lab18.place(x=600, y=700)
 
         self.one_lab18var = tk.BooleanVar()
@@ -356,15 +376,15 @@ class FirstSidewindow(ctk.CTkToplevel):
         lab18chek.place(x=550, y=700)
 
         lab19 = tk.Label(self, text="ينشر محاضراته وفعالياته العلمية على الموقع الالكتروني (على ان لا تقل عن10محاضرات)",
-                         font=("thesans", 16))
+                         font=("thesans", 15), fg="#fff", bg="#141E46")
         lab19.place(x=510, y=750)
 
         self.one_lab19var = tk.BooleanVar()
         lab19chek = tk.Checkbutton(self, variable=self.one_lab19var)
         lab19chek.place(x=470, y=750)
 
-        lab20 = tk.Label(self, text="يستخدم المنصات الالكترونية للتواصل مع الطلبة مثلEdmodo, Moodle, Google Class room",
-                         font=("thesans", 16))
+        lab20 = tk.Label(self, text="يستخدم المنصات الالكترونية للتواصل مع الطلبة مثل Edmodo, Moodle, Google Class room",
+                         font=("thesans", 15), fg="#fff", bg="#141E46")
         lab20.place(x=420, y=800)
 
         self.one_lab20var = tk.BooleanVar()
@@ -372,38 +392,34 @@ class FirstSidewindow(ctk.CTkToplevel):
         lab20chek.place(x=370, y=800)
 
         lab21 = tk.Label(self, text="يستخدم الطرائق والوسائل الحديثةالمستخدمة في التعليم الالكتروني",
-                         font=("thesans", 16))
+                         font=("thesans", 15), fg="#fff", bg="#141E46")
         lab21.place(x=600, y=840)
 
         self.one_lab21var = tk.BooleanVar()
         lab21chek = tk.Checkbutton(self, variable=self.one_lab21var)
         lab21chek.place(x=550, y=840)
 
-        button_complate = tk.Button(self, text="gتكملة المحور الاول ", command=self.comp)
-        button_complate.place(x=300, y=300)
-
-    def show_score(self):
-        score = self.calculate_fisrt_side_score()
-        self.score_label.config(text=f"النقاط: {score}", font=("thesans", 20))
+        button_complate = tk.Button(self, text="تكملة المحور الاول", command=self.comp , font=("thesans", 16), fg="#fff", bg="#ff6600")
+        button_complate.pack(side='bottom', pady=10)
 
     def comp(self):
         self.withdraw()
-
         self.new_window = ctk.CTkToplevel(self)
         self.new_window.title("تكملة المحور الاول")
+        self.new_window.resizable(False, False)
 
-        self.new_window.geometry("900x700+350+30")
+        self.new_window.geometry("910x400+350+30")
         self.new_window.title(" المحور الاول")
         self.new_window.rowconfigure(0, weight=1)
         self.new_window.columnconfigure(0, weight=1)
-        self.new_window.config(bg='#DDF2FD')
+        self.new_window.config(bg='#141E46')
 
-        lab1 = tk.Label(self.new_window, text="الاساليب المستعملة في تقييم الطلبة", font=("thesans", 16, "bold"))
+        lab1 = tk.Label(self.new_window, text="الاساليب المستعملة في تقييم الطلبة", font=("thesans", 15, "bold"), fg="#41B06E", bg="#141E46")
         lab1.place(x=850, y=30)
 
         lab2 = tk.Label(self.new_window,
                         text="يستخدم اساليب متنوعة لتقيم اداء الطلة مثل اختبارات تحريرية , شفوية ,ادائية , تقارير الكترونية ,انشطة الكترونيةو ",
-                        font=("thesans", 16))
+                        font=("thesans", 15), fg="#fff", bg="#141E46")
         lab2.place(x=330, y=100)
 
         self.new_window.one_lab22var = tk.BooleanVar()
@@ -412,7 +428,7 @@ class FirstSidewindow(ctk.CTkToplevel):
 
         lab3 = tk.Label(self.new_window,
                         text=" يقوم بتقييم الطلبة بشكل دوري ومستمر وشامل طوال العام الدراسي ويعلن نتائج التقييم للطلبة في الوقت المناسب",
-                        font=("thesans", 16))
+                        font=("thesans", 15), fg="#fff", bg="#141E46")
         lab3.place(x=330, y=150)
 
         self.new_window.one_lab23var = tk.BooleanVar()
@@ -421,17 +437,17 @@ class FirstSidewindow(ctk.CTkToplevel):
 
         lab4 = tk.Label(self.new_window,
                         text=" يقدم تغذية راجعة للطلبة حول ادائهم في الاختبارات ويعرض الاجوبة النموذجية لاسئلة الاختبارات الدورية",
-                        font=("thesans", 16))
+                        font=("thesans", 15), fg="#fff", bg="#141E46")
         lab4.place(x=330, y=200)
 
         self.new_window.one_lab24var = tk.BooleanVar()
         lab4chk = tk.Checkbutton(self.new_window, variable=self.new_window.one_lab24var)
         lab4chk.place(x=300, y=200)
 
-        lab5 = tk.Label(self.new_window, text="وصف المقرر الدراسي وتحديثه-موجود:", font=("thesans", 16, "bold"))
+        lab5 = tk.Label(self.new_window, text="وصف المقرر الدراسي وتحديثه-موجود:", font=("thesans", 15, "bold"), fg="#41B06E", bg="#141E46")
         lab5.place(x=800, y=250)
 
-        lab6 = tk.Label(self.new_window, text=" يقدم وصف المقرر الدراسي في بداية العام الدراسي", font=("thesans", 16))
+        lab6 = tk.Label(self.new_window, text=" يقدم وصف المقرر الدراسي في بداية العام الدراسي", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab6.place(x=330, y=300)
 
         self.new_window.one_lab26var = tk.BooleanVar()
@@ -439,7 +455,7 @@ class FirstSidewindow(ctk.CTkToplevel):
         lab6chk.place(x=300, y=300)
 
         lab7 = tk.Label(self.new_window, text="يعرض مفردات المقرر ويوزع الانشطة والواجبات على الطلبة",
-                        font=("thesans", 16))
+                        font=("thesans", 15), fg="#fff", bg="#141E46")
         lab7.place(x=330, y=350)
 
         self.new_window.one_lab27var = tk.BooleanVar()
@@ -448,36 +464,50 @@ class FirstSidewindow(ctk.CTkToplevel):
 
         lab8 = tk.Label(self.new_window,
                         text="يقدم مقترحات لتطوير المقرر ومفرداته ويستخدم المصادر الحديثة في اعداد المحاضرات والانشطة دوريا",
-                        font=("thesans", 16))
+                        font=("thesans", 15), fg="#fff", bg="#141E46")
         lab8.place(x=330, y=400)
 
         self.new_window.one_lab28var = tk.BooleanVar()
         lab8chk = tk.Checkbutton(self.new_window, variable=self.new_window.one_lab28var)
         lab8chk.place(x=300, y=400)
 
-        btgo = tk.Button(self.new_window, text=" المحور الثاني   ", command=self.go2)
-        btgo.place(x=850, y=650)
+        btgo = tk.Button(self.new_window, text=" المحور الثاني   ", command=self.changetosecondside, font=("thesans", 15), fg="#fff", bg="#ff6600")
+        btgo.pack(side='bottom', pady=10)
 
-        calc_button = tk.Button(self.new_window, text="حساب النقاط", command=self.calculate_fisrt_side_score)
-        calc_button.place(x=800, y=650)
+        # calc_button = tk.Button(self.new_window, text="حساب النقاط", command=self.calculate_fisrt_side_score, font=("thesans", 15))
+        # calc_button.place(x=800, y=650)
+        #
+        # self.score_label = tk.Label(self.new_window, text=f"النقاط: {score}", font=("thesans", 15))
+        # self.score_label.place(x=800, y=700)
+        #
+        # insert_button = tk.Button(self.new_window, text="حفظ النتيجة", command=self.insert_to_database, font=("thesans", 15))
+        # insert_button.place(x=800, y=750)
 
-        self.score_label = tk.Label(self.new_window, text="النقاط: 0", font=("thesans", 20))
-        self.score_label.place(x=800, y=700)
+        # calc_button.config(command=self.show_score)
 
-        insert_button = tk.Button(self.new_window, text="حفظ النتيجة", command=self.insert_to_database)
-        insert_button.place(x=800, y=750)
-
-        calc_button.config(command=self.show_score)
+        # def show_score(self):
+        #     score = self.calculate_fisrt_side_score()
+        #     self.score_label.config(text=f"النقاط: {score}", font=("thesans", 15))
 
     def back(self):
         self.destroy()
         self.login_window.master.withdraw()
         self.login_window.master.deiconify()
 
-    def go2(self):
+    def changetosecondside(self):
         self.destroy()
-        self.second_sidewindow = SecondSidewindow(self.master, self.login_window)
-        self.second_sidewindow.deiconify()
+        secondside = SecondSidewindow(self.master, self.login_window)
+        secondside.deiconify()
+
+        # تلقائيا يحفظ البيانات بعد الانتقال للواجهة الثانية
+        score = self.calculate_fisrt_side_score()
+        username = self.login_window.username_entry.get()
+        self.cursor = self.db.cursor()
+        self.cursor.execute("SELECT id FROM users WHERE username=%s", (username,))
+        user_id = self.cursor.fetchone()[0]
+
+        self.cursor.execute("INSERT INTO results (user_id, side_one_score) VALUES (%s, %s)", (user_id, score))
+        self.db.commit()
 
     def calculate_fisrt_side_score(self):
         score = 0
@@ -540,22 +570,21 @@ class FirstSidewindow(ctk.CTkToplevel):
             if self.new_window.one_lab28var.get():
                 score += 5
 
-        return score
+        return score * 40 / 100
 
         # اضافة النتيجة الى قاعدة البيانات للمحور الاول
-
-    def insert_to_database(self):
-        score = self.calculate_fisrt_side_score()
-        username = self.login_window.username_entry.get()
-        self.cursor = self.db.cursor()
-        self.cursor.execute("SELECT id FROM users WHERE username=%s", (username,))
-        user_id = self.cursor.fetchone()[0]
-
-        self.cursor.execute("INSERT INTO results (user_id, side_one_score) VALUES (%s, %s)", (user_id, score))
-        self.db.commit()
-
-        if self.cursor.rowcount > 0:
-            messagebox.showinfo("Success", "تم حفظ النتيجة بنجاح")
+    # def insert_to_database(self):
+    #     score = self.calculate_fisrt_side_score()
+    #     username = self.login_window.username_entry.get()
+    #     self.cursor = self.db.cursor()
+    #     self.cursor.execute("SELECT id FROM users WHERE username=%s", (username,))
+    #     user_id = self.cursor.fetchone()[0]
+    #
+    #     self.cursor.execute("INSERT INTO results (user_id, side_one_score) VALUES (%s, %s)", (user_id, score))
+    #     self.db.commit()
+    #
+    #     if self.cursor.rowcount > 0:
+    #         messagebox.showinfo("Success", "تم حفظ النتيجة بنجاح")
 
 
 class SecondSidewindow(ctk.CTkToplevel):
@@ -563,54 +592,49 @@ class SecondSidewindow(ctk.CTkToplevel):
         super().__init__(master)
         self.login_window = login_window
         self.db = login_window.db
-        self.geometry("900x700+350+30")
+        self.geometry("980x600+350+30")
         self.title(" المحور الثاني")
-        self.rowconfigure(0, weight=1)
-        self.columnconfigure(0, weight=1)
-        self.config(bg='#DDF2FD')
-
-        btgo = tk.Button(self, text="تكملة المحور الثاني", command=self.comp2)
-        btgo.place(x=50, y=100)
+        self.config(bg='#141E46')
 
         lab1 = tk.Label(self,
-                        text="المحور الثاني:النشاط العلمي والبحثي (40% ) يملئ من قبلاللجنة العلمية بعد ان تقدم الوثائق منقبل صاحب العلاقة",
-                        font=("thesans", 20, "bold"))
+                        text="المحور الثاني:النشاط العلمي والبحثي (40% ) يملئ من قبل اللجنة العلمية بعد ان تقدم الوثائق من قبل صاحب العلاقة",
+                        font=("thesans", 20, "bold"), fg="#ff6600", bg="#141E46")
         lab1.place(x=100, y=30)
 
-        lab2 = tk.Label(self, text="عددالبحوث المنشورة", font=("thesans", 16))
+        lab2 = tk.Label(self, text="عددالبحوث المنشورة", font=("thesans", 15), fg="#41B06E", bg="#141E46")
         lab2.place(x=900, y=90)
 
-        lab3 = tk.Label(self, text="عالمي سكوبس-معامل التاثير ", font=("thesans", 16))
+        lab3 = tk.Label(self, text="عالمي سكوبس-معامل التاثير ", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab3.place(x=800, y=130)
 
         self.lab3var = tk.IntVar()
         lab3chk = tk.Entry(self, textvariable=self.lab3var)
         lab3chk.place(x=650, y=130)
 
-        lab4 = tk.Label(self, text="  عالمي كلارفيك معلمب التاثير ", font=("thesans", 16))
+        lab4 = tk.Label(self, text="  عالمي كلارفيك معامل التاثير ", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab4.place(x=720, y=170)
 
         self.lab4var = tk.IntVar()
         lab4chk = tk.Entry(self, textvariable=self.lab4var)
         lab4chk.place(x=600, y=170)
 
-        lab5 = tk.Label(self, text="عالمي او عربي او محلي على ان لا تكون مفترسة", font=("thesans", 16))
+        lab5 = tk.Label(self, text="عالمي او عربي او محلي على ان لا تكون مفترسة", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab5.place(x=700, y=220)
 
         self.lab5var = tk.BooleanVar()
         lab5chk = tk.Checkbutton(self, variable=self.lab5var)
         lab5chk.place(x=660, y=220)
 
-        lab6 = tk.Label(self, text="تقويم البحوث والمقالات العلمية والرسائل والاطاريح وبرائات الاختراع ",
-                        font=("thesans", 16))
+        lab6 = tk.Label(self, text="تقويم البحوث والمقالات العلمية والرسائل والاطاريح وبراءات الاختراع ",
+                        font=("thesans", 15), fg="#fff", bg="#141E46")
         lab6.place(x=630, y=270)
         self.lab6var = tk.BooleanVar()
         lab6chk = tk.Checkbutton(self, variable=self.lab6var)
         lab6chk.place(x=600, y=270)
 
         lab7 = tk.Label(self,
-                        text="كتاب المولف العلميي او المنهجي او المترجم شرط ان يكون مقوم علميااو المنشور في دار النشر العالمية",
-                        font=("thesans", 16))
+                        text="كتاب المولف العلمي او المنهجي او المترجم شرط ان يكون مقوم علميا او المنشور في دار النشر العالمية",
+                        font=("thesans", 15), fg="#fff", bg="#141E46")
         lab7.place(x=430, y=300)
         self.lab7var = tk.BooleanVar()
         lab7chk = tk.Checkbutton(self, variable=self.lab7var)
@@ -618,116 +642,116 @@ class SecondSidewindow(ctk.CTkToplevel):
 
         lab8 = tk.Label(self,
                         text="كتاب المولف العلمي او المنهجي او المترجم شرط ان يكون مقوم علميا ونشر في دار نشر عربية او محلية",
-                        font=("thesans", 16))
+                        font=("thesans", 15), fg="#fff", bg="#141E46")
         lab8.place(x=430, y=340)
         self.lab8var = tk.BooleanVar()
         lab8chk = tk.Checkbutton(self, variable=self.lab8var)
         lab8chk.place(x=400, y=340)
 
-        lab9 = tk.Label(self, text="عددالاشراف", font=("thesans", 20, "bold"))
+        lab9 = tk.Label(self, text="عددالاشراف", font=("thesans", 16), fg="#41B06E", bg="#141E46")
         lab9.place(x=100, y=100)
 
-        lab10 = tk.Label(self, text="عشر درجات دكتوراه منفرد", font=("thesans", 16))
+        lab10 = tk.Label(self, text="عشر درجات دكتوراه منفرد", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab10.place(x=100, y=140)
 
         self.lab10var = tk.BooleanVar()
         lab10chk = tk.Checkbutton(self, variable=self.lab10var)
         lab10chk.place(x=50, y=140)
 
-        lab11 = tk.Label(self, text="خمسة درجات دكتوراه مشترك", font=("thesans", 16))
+        lab11 = tk.Label(self, text="خمسة درجات دكتوراه مشترك", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab11.place(x=100, y=180)
         self.lab11var = tk.BooleanVar()
         lab11chk = tk.Checkbutton(self, variable=self.lab11var)
         lab11chk.place(x=50, y=180)
 
-        lab12 = tk.Label(self, text="ثمانية درجات ماجستير منفرد", font=("thesans", 16))
+        lab12 = tk.Label(self, text="ثمانية درجات ماجستير منفرد", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab12.place(x=100, y=220)
         self.lab12var = tk.BooleanVar()
         lab12chk = tk.Checkbutton(self, variable=self.lab12var)
         lab12chk.place(x=50, y=220)
 
-        lab13 = tk.Label(self, text="اربعة درجات ماجستير مشترك", font=("thesans", 16))
+        lab13 = tk.Label(self, text="اربعة درجات ماجستير مشترك", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab13.place(x=100, y=280)
         self.lab13var = tk.BooleanVar()
         lab13chk = tk.Checkbutton(self, variable=self.lab13var)
         lab13chk.place(x=50, y=280)
 
-        lab14 = tk.Label(self, text="ستة درجات دبلوم عالي منفرد", font=("thesans", 16))
+        lab14 = tk.Label(self, text="ستة درجات دبلوم عالي منفرد", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab14.place(x=100, y=320)
         self.lab14var = tk.BooleanVar()
         lab14chk = tk.Checkbutton(self, variable=self.lab14var)
         lab14chk.place(x=50, y=320)
 
-        lab15 = tk.Label(self, text="ثلاثة درجات دبلوم عالي مشترك", font=("thesans", 16))
+        lab15 = tk.Label(self, text="ثلاثة درجات دبلوم عالي مشترك", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab15.place(x=100, y=380)
         self.lab15var = tk.BooleanVar()
         lab15chk = tk.Checkbutton(self, variable=self.lab15var)
         lab15chk.place(x=50, y=380)
 
-        lab16 = tk.Label(self, text="اربعة درجات  بكالوريوس", font=("thesans", 16))
+        lab16 = tk.Label(self, text="اربعة درجات  بكالوريوس", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab16.place(x=100, y=420)
         self.lab16var = tk.BooleanVar()
         lab16chk = tk.Checkbutton(self, variable=self.lab16var)
         lab16chk.place(x=50, y=420)
 
-        lab17 = tk.Label(self, text="المشاركة في الموتمارات \n العلمية", font=("thesans", 16))
+        lab17 = tk.Label(self, text="المشاركة في المؤتمرات \n العلمية", font=("thesans", 15), fg="#41B06E", bg="#141E46")
         lab17.place(x=900, y=500)
 
-        lab18 = tk.Label(self, text="الندوات", font=("thesans", 16))
+        lab18 = tk.Label(self, text="الندوات", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab18.place(x=900, y=580)
 
-        lab19 = tk.Label(self, text="الدورات التدريبية", font=("thesans", 16))
+        lab19 = tk.Label(self, text="الدورات التدريبية", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab19.place(x=900, y=660)
 
-        lab20 = tk.Label(self, text="ورش عمل", font=("thesans", 16))
+        lab20 = tk.Label(self, text="ورش عمل", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab20.place(x=900, y=720)
 
-        lab21 = tk.Label(self, text="عدد كمحاضر", font=("thesans", 16))
+        lab21 = tk.Label(self, text="عدد كمحاضر", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab21.place(x=750, y=450)
 
-        lab22 = tk.Label(self, text="دولي عالمي\nخارج العراق", font=("thesans", 16))
+        lab22 = tk.Label(self, text="دولي عالمي\nخارج العراق", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab22.place(x=630, y=450)
 
-        lab23 = tk.Label(self, text="داخل العراق", font=("thesans", 16))
+        lab23 = tk.Label(self, text="داخل العراق", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab23.place(x=520, y=450)
 
-        lab24 = tk.Label(self, text="عدد كحضور", font=("thesans", 16))
+        lab24 = tk.Label(self, text="عدد كحضور", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab24.place(x=420, y=450)
 
-        lab25 = tk.Label(self, text="دولي عالمي\nخارج العراق", font=("thesans", 16))
+        lab25 = tk.Label(self, text="دولي عالمي\nخارج العراق", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab25.place(x=330, y=450)
 
-        lab26 = tk.Label(self, text="داخل العراق", font=("thesans", 16))
+        lab26 = tk.Label(self, text="داخل العراق", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab26.place(x=220, y=470)
 
-        lab27 = tk.Label(self, text="الموتمرات العلمية \nبحث منفرد", font=("thesans", 16))
+        lab27 = tk.Label(self, text="الموتمرات العلمية \nبحث منفرد", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab27.place(x=750, y=500)
 
-        lab28 = tk.Label(self, text="الموتمرات العلمية \nبحث مشترك", font=("thesans", 16))
+        lab28 = tk.Label(self, text="الموتمرات العلمية \nبحث مشترك", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab28.place(x=750, y=570)
 
-        lab29 = tk.Label(self, text="الموتمرات العلمية بوستر ", font=("thesans", 16))
+        lab29 = tk.Label(self, text="الموتمرات العلمية بوستر ", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab29.place(x=700, y=650)
 
-        lab30 = tk.Label(self, text="الندوات", font=("thesans", 16))
+        lab30 = tk.Label(self, text="الندوات", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab30.place(x=700, y=700)
 
-        lab31 = tk.Label(self, text="الدورات التدريبية", font=("thesans", 16))
+        lab31 = tk.Label(self, text="الدورات التدريبية", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab31.place(x=700, y=730)
 
-        lab32 = tk.Label(self, text="ورش عمل", font=("thesans", 16))
+        lab32 = tk.Label(self, text="ورش عمل", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab32.place(x=700, y=770)
 
-        lab33 = tk.Label(self, text="الموتمرات العلمية", font=("thesans", 16))
+        lab33 = tk.Label(self, text="الموتمرات العلمية", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab33.place(x=420, y=520)
 
-        lab34 = tk.Label(self, text="الندوات", font=("thesans", 16))
+        lab34 = tk.Label(self, text="الندوات", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab34.place(x=420, y=600)
 
-        lab35 = tk.Label(self, text="الدورات التدريبية", font=("thesans", 16))
+        lab35 = tk.Label(self, text="الدورات التدريبية", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab35.place(x=420, y=670)
 
-        lab36 = tk.Label(self, text="ورش العمل", font=("thesans", 16))
+        lab36 = tk.Label(self, text="ورش العمل", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab36.place(x=420, y=750)
 
         # موتمرات علمية دولي عالمي خارج العرق بحث منفرد
@@ -830,136 +854,118 @@ class SecondSidewindow(ctk.CTkToplevel):
         lab35chk = tk.Checkbutton(self, variable=self.lab35var)
         lab35chk.place(x=230, y=760)
 
-        calc_button = tk.Button(self, text="حساب النقاط")
-        calc_button.place(x=50, y=650)
-
-        self.score_label = tk.Label(self, text="النقاط: 0", font=("thesans", 20))
-        self.score_label.place(x=200, y=650)
-
-        insert_button = tk.Button(self, text="حفظ النتيجة", command=self.insert_to_database)
-        insert_button.place(x=50, y=700)
-
-
-        def show_score():
-            score = self.calculate_second_side_score()
-            self.score_label.config(text=f"النقاط: {score}")
-
-        calc_button.config(command=show_score)
+        btgo = tk.Button(self, text="تكملة المحور الثاني", command=self.comp2, font=("thesans", 16), fg="#fff", bg="#ff6600")
+        btgo.pack(side='bottom', pady=10)
 
     def comp2(self):
         self.withdraw()
 
         self.new_window2 = ctk.CTkToplevel(self)
         self.new_window2.title("تكملة المحور الثاني")
-        self.new_window2.geometry("900x700+350+30")
-        self.new_window2.title("تكملة المحور الثاني")
-        self.new_window2.rowconfigure(0, weight=1)
-        self.new_window2.columnconfigure(0, weight=1)
-        self.new_window2.config(bg='#DDF2FD')
+        self.new_window2.geometry("850x600+350+30")
+        self.new_window2.config(bg='#141E46')
 
-        btgo = tk.Button(self.new_window2, text=" المحور الثالث   ", command=self.go2)
-        btgo.place(x=50, y=50)
         lab1 = tk.Label(self.new_window2, text="المساهمة في خدمة الموسسات العلمية خارج وزارة التعليم",
-                        font=("thesans", 20, "bold"))
+                        font=("thesans", 16), fg="#41B06E", bg="#141E46")
         lab1.place(x=600, y=20)
 
-        lab2 = tk.Label(self.new_window2, text="خدمة او استشارة", font=("thesans", 16))
+        lab2 = tk.Label(self.new_window2, text="خدمة او استشارة", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab2.place(x=1000, y=70)
 
         self.new_window2.lab36var = tk.BooleanVar()
         lab2chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab36var)
         lab2chk.place(x=950, y=70)
 
-        lab3 = tk.Label(self.new_window2, text="اقامة ندوة ", font=("arial", 16))
+        lab3 = tk.Label(self.new_window2, text="اقامة ندوة ", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab3.place(x=1000, y=120)
         self.new_window2.lab37var = tk.BooleanVar()
         lab3chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab37var)
         lab3chk.place(x=950, y=120)
 
-        lab4 = tk.Label(self.new_window2, text=" ملتقى ثقافي او علمي ", font=("arial", 16))
+        lab4 = tk.Label(self.new_window2, text=" ملتقى ثقافي او علمي ", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab4.place(x=950, y=170)
         self.new_window2.lab38var = tk.BooleanVar()
         lab4chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab38var)
         lab4chk.place(x=900, y=170)
 
-        lab5 = tk.Label(self.new_window2, text="ورشة عمل", font=("arial", 16))
+        lab5 = tk.Label(self.new_window2, text="ورشة عمل", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab5.place(x=1000, y=220)
         self.new_window2.lab39var = tk.BooleanVar()
         lab5chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab39var)
         lab5chk.place(x=950, y=220)
 
-        lab6 = tk.Label(self.new_window2, text="محاضرة", font=("arial", 16))
+        lab6 = tk.Label(self.new_window2, text="محاضرة", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab6.place(x=800, y=70)
         self.new_window2.lab40var = tk.BooleanVar()
         lab6chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab40var)
         lab6chk.place(x=750, y=70)
 
-        lab7 = tk.Label(self.new_window2, text="دورة تدريبية", font=("arial", 16))
+        lab7 = tk.Label(self.new_window2, text="دورة تدريبية", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab7.place(x=800, y=120)
         self.new_window2.lab41var = tk.BooleanVar()
         lab7chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab41var)
         lab7chk.place(x=750, y=120)
 
-        lab8 = tk.Label(self.new_window2, text="لقاء صحفي", font=("arial", 16))
+        lab8 = tk.Label(self.new_window2, text="لقاء صحفي", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab8.place(x=800, y=170)
         self.new_window2.lab42var = tk.BooleanVar()
         lab8chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab42var)
         lab8chk.place(x=750, y=170)
 
-        lab9 = tk.Label(self.new_window2, text="نشر مقالة في مجلة", font=("arial", 16))
+        lab9 = tk.Label(self.new_window2, text="نشر مقالة في مجلة", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab9.place(x=800, y=220)
         self.new_window2.lab43var = tk.BooleanVar()
         lab9chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab43var)
         lab9chk.place(x=750, y=220)
 
-        lab10 = tk.Label(self.new_window2, text="زيارة دار الايتام والمسنين", font=("arial", 16))
+        lab10 = tk.Label(self.new_window2, text="زيارة دار الايتام والمسنين", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab10.place(x=500, y=70)
         self.new_window2.lab44var = tk.BooleanVar()
         lab10chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab44var)
         lab10chk.place(x=450, y=70)
 
-        lab11 = tk.Label(self.new_window2, text="خدمة المستشفيات التعليمية", font=("arial", 16))
+        lab11 = tk.Label(self.new_window2, text="خدمة المستشفيات التعليمية", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab11.place(x=500, y=120)
         self.new_window2.lab45var = tk.BooleanVar()
         lab11chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab45var)
         lab11chk.place(x=450, y=120)
 
-        lab12 = tk.Label(self.new_window2, text="خدمةالمؤسسات الخدميةاوالانتاجية الحكومية", font=("arial", 16))
+        lab12 = tk.Label(self.new_window2, text="خدمةالمؤسسات الخدميةاوالانتاجية الحكومية", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab12.place(x=450, y=170)
         self.new_window2.lab46var = tk.BooleanVar()
         lab12chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab46var)
         lab12chk.place(x=400, y=170)
 
-        lab13 = tk.Label(self.new_window2, text="اخرى:", font=("arial", 16))
+        lab13 = tk.Label(self.new_window2, text="اخرى:", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab13.place(x=450, y=220)
         self.new_window2.lab47var = tk.BooleanVar()
         lab13chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab47var)
         lab13chk.place(x=400, y=220)
 
         lab14 = tk.Label(self.new_window2, text="المشاركة في التعليم المستمر والحلقات العلمية والثقافية والسنمار",
-                         font=("arial", 20, "bold"))
+                         font=("thesans", 15), fg="#41B06E", bg="#141E46")
         lab14.place(x=530, y=280)
 
-        lab15 = tk.Label(self.new_window2, text="محاضر في التعليم المستمر", font=("arial", 16))
+        lab15 = tk.Label(self.new_window2, text="محاضر في التعليم المستمر", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab15.place(x=900, y=340)
 
         self.new_window2.lab48var = tk.BooleanVar()
         lab15chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab48var)
         lab15chk.place(x=850, y=340)
 
-        lab16 = tk.Label(self.new_window2, text="دورات طرائق التدريسالحديثةفي التعليم المستمر", font=("arial", 16))
+        lab16 = tk.Label(self.new_window2, text="دورات طرائق التدريس الحديثةفي التعليم المستمر", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab16.place(x=800, y=380)
         self.new_window2.lab49var = tk.BooleanVar()
         lab16chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab49var)
         lab16chk.place(x=750, y=380)
 
-        lab17 = tk.Label(self.new_window2, text="حضوردورة تعليم مستمر", font=("arial", 16))
+        lab17 = tk.Label(self.new_window2, text="حضور دورة تعليم مستمر", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab17.place(x=600, y=340)
         self.new_window2.lab50var = tk.BooleanVar()
         lab17chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab50var)
         lab17chk.place(x=550, y=340)
 
-        lab18 = tk.Label(self.new_window2, text="عضو لجنة الحلقات الثقافية والسمنار", font=("arial", 16))
+        lab18 = tk.Label(self.new_window2, text="عضو لجنة الحلقات الثقافية والسمنار", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab18.place(x=500, y=380)
         self.new_window2.lab51var = tk.BooleanVar()
         lab18chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab51var)
@@ -967,175 +973,61 @@ class SecondSidewindow(ctk.CTkToplevel):
 
         lab19 = tk.Label(self.new_window2,
                          text="المشاركة في الزيارات الميدانية او الحقلية او اجراء اختبارات  او تحليلات معملية او مختبرية",
-                         font=("arial", 20, "bold"))
+                         font=("thesans", 15), fg="#41B06E", bg="#141E46")
         lab19.place(x=300, y=420)
 
         lab20 = tk.Label(self.new_window2, text="الزيارات الميدانية للاشراف على الطلبة ضمن الاختصاص",
-                         font=("arial", 16))
+                         font=("thesans", 15), fg="#fff", bg="#141E46")
         lab20.place(x=700, y=480)
         self.new_window2.lab52var = tk.BooleanVar()
         lab20chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab52var)
         lab20chk.place(x=650, y=480)
 
-        lab21 = tk.Label(self.new_window2, text="الزيارات الحقلية", font=("arial", 16))
+        lab21 = tk.Label(self.new_window2, text="الزيارات الحقلية", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab21.place(x=700, y=520)
         self.new_window2.lab53var = tk.BooleanVar()
         lab21chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab53var)
         lab21chk.place(x=650, y=520)
 
-        lab22 = tk.Label(self.new_window2, text="اجراء اختبارات", font=("arial", 16))
+        lab22 = tk.Label(self.new_window2, text="اجراء اختبارات", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab22.place(x=700, y=560)
         self.new_window2.lab54var = tk.BooleanVar()
         lab22chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab54var)
         lab22chk.place(x=650, y=560)
 
-        lab23 = tk.Label(self.new_window2, text="تحليلات معملي", font=("arial", 16))
+        lab23 = tk.Label(self.new_window2, text="تحليلات معملي", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab23.place(x=700, y=600)
         self.new_window2.lab55var = tk.BooleanVar()
         lab23chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab55var)
         lab23chk.place(x=650, y=600)
 
-        lab24 = tk.Label(self.new_window2, text="تحليلات مختبرية", font=("arial", 16))
+        lab24 = tk.Label(self.new_window2, text="تحليلات مختبرية", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab24.place(x=700, y=640)
         self.new_window2.lab56var = tk.BooleanVar()
         lab24chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab56var)
         lab24chk.place(x=650, y=640)
 
-        lab25 = tk.Label(self.new_window2, text="الزيارات والسفرات العلمية", font=("arial", 16))
+        lab25 = tk.Label(self.new_window2, text="الزيارات والسفرات العلمية", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab25.place(x=700, y=680)
         self.new_window2.lab57var = tk.BooleanVar()
         lab25chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab57var)
         lab25chk.place(x=650, y=680)
 
-        lab26 = tk.Label(self.new_window2, text="اخرى :", font=("arial", 16))
+        lab26 = tk.Label(self.new_window2, text="اخرى :", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab26.place(x=700, y=720)
         self.new_window2.lab58var = tk.BooleanVar()
         lab26chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab58var)
         lab26chk.place(x=650, y=720)
+
+        btgo = tk.Button(self.new_window2, text=" المحور الثالث   ", command=self.go2, font=("thesans", 16), fg="#fff", bg="#ff6600")
+        btgo.pack(side='bottom', pady=10)
 
     def go2(self):
         self.destroy()
         self.second_sidewindow = TherdSidewindow(self.master, self.login_window)
         self.second_sidewindow.deiconify()
 
-    def calculate_second_side_score(self):
-        score = 0
-        if self.lab3var.get():
-            score += 10
-        if self.lab4var.get():
-            score += 10
-        if self.lab5var.get():
-            score += 10
-        if self.lab6var.get():
-            score += 10
-        if self.lab7var.get():
-            score += 10
-        if self.lab8var.get():
-            score += 10
-        if self.lab10var.get():
-            score += 10
-        if self.lab11var.get():
-            score += 10
-        if self.lab12var.get():
-            score += 10
-        if self.lab13var.get():
-            score += 10
-        if self.lab14var.get():
-            score += 10
-        if self.lab15var.get():
-            score += 10
-        if self.lab16var.get():
-            score += 10
-        if self.lab17var.get():
-            score += 10
-        if self.lab18var.get():
-            score += 10
-        if self.lab19var.get():
-            score += 10
-        if self.lab20var.get():
-            score += 10
-        if self.lab21var.get():
-            score += 10
-        if self.lab22var.get():
-            score += 10
-        if self.lab23var.get():
-            score += 10
-        if self.lab24var.get():
-            score += 10
-        if self.lab25var.get():
-            score += 10
-        if self.lab26var.get():
-            score += 10
-        if self.lab27var.get():
-            score += 10
-        if self.lab28var.get():
-            score += 10
-        if self.lab29var.get():
-            score += 10
-        if self.lab30var.get():
-            score += 10
-        if self.lab31var.get():
-            score += 10
-        if self.lab32var.get():
-            score += 10
-        if self.lab33var.get():
-            score += 10
-        if self.lab34var.get():
-            score += 10
-        if self.lab35var.get():
-            score += 10
-
-        # تكملة المحور الثاني
-        if hasattr(self, 'new_window2'):
-            if self.new_window2.lab36var.get():
-                score += 10
-            if self.new_window2.lab37var.get():
-                score += 10
-            if self.new_window2.lab38var.get():
-                score += 10
-            if self.new_window2.lab39var.get():
-                score += 10
-            if self.new_window2.lab40var.get():
-                score += 10
-            if self.new_window2.lab41var.get():
-                score += 10
-            if self.new_window2.lab42var.get():
-                score += 10
-            if self.new_window2.lab43var.get():
-                score += 10
-            if self.new_window2.lab44var.get():
-                score += 10
-            if self.new_window2.lab45var.get():
-                score += 10
-            if self.new_window2.lab46var.get():
-                score += 10
-            if self.new_window2.lab47var.get():
-                score += 10
-            if self.new_window2.lab48var.get():
-                score += 10
-            if self.new_window2.lab49var.get():
-                score += 10
-            if self.new_window2.lab50var.get():
-                score += 10
-            if self.new_window2.lab51var.get():
-                score += 10
-            if self.new_window2.lab52var.get():
-                score += 10
-            if self.new_window2.lab53var.get():
-                score += 10
-            if self.new_window2.lab54var.get():
-                score += 10
-            if self.new_window2.lab55var.get():
-                score += 10
-            if self.new_window2.lab56var.get():
-                score += 10
-            if self.new_window2.lab57var.get():
-                score += 10
-            if self.new_window2.lab58var.get():
-                score += 10
-        return score
-
-    def insert_to_database(self):
+        # تلقائيا يحفظ البيانات بعد الانتقال للواجهة الثانية
         score = self.calculate_second_side_score()
         username = self.login_window.username_entry.get()
         self.cursor = self.db.cursor()
@@ -1145,175 +1037,264 @@ class SecondSidewindow(ctk.CTkToplevel):
         self.cursor.execute("UPDATE results SET side_two_score = %s WHERE user_id = %s", (score, user_id))
         self.db.commit()
 
-        if self.cursor.rowcount > 0:
-            messagebox.showinfo("Success", "تم حفظ النتيجة بنجاح")
+    def calculate_second_side_score(self):
+        score = 0
+        if self.lab3var.get() > 4:
+            score += 20
+        if self.lab3var.get() > 2:
+            score += 15
+        if self.lab3var.get() < 2:
+            score += 10
+        if self.lab3var.get() < 1:
+            score += 5
 
+        if self.lab4var.get() > 2:
+            score += 20
+        if self.lab4var.get() > 1:
+            score += 15
+        if self.lab4var.get() < 1:
+            score += 10
+        if self.lab4var.get() == 0:
+            score += 5
+
+        if self.lab5var.get():
+            score += 5
+        if self.lab6var.get():
+            score += 3
+        if self.lab7var.get():
+            score += 20
+        if self.lab8var.get():
+            score += 10
+
+        if self.lab10var.get():
+            score += 10
+        if self.lab11var.get():
+            score += 5
+        if self.lab12var.get():
+            score += 8
+        if self.lab13var.get():
+            score += 4
+        if self.lab14var.get():
+            score += 6
+        if self.lab15var.get():
+            score += 3
+        if self.lab16var.get():
+            score += 4
+
+        # المشاركة في لمؤتمرات العلمية ندوات  دورات تدريبية ورش عمل
+
+        if self.lab17var.get():
+            score += 20
+        if self.lab18var.get():
+            score += 10
+        if self.lab19var.get():
+            score += 2
+        if self.lab20var.get():
+            score += 2
+
+        if self.lab21var.get():
+            score += 15
+        if self.lab22var.get():
+            score += 5
+
+        if self.lab23var.get():
+            score += 2
+        if self.lab24var.get():
+            score += 2
+
+        if self.lab25var.get():
+            score += 10
+        if self.lab26var.get():
+            score += 5
+        if self.lab27var.get():
+            score += 2
+        if self.lab28var.get():
+            score += 2
+
+        if self.lab29var.get():
+            score += 10
+        if self.lab30var.get():
+            score += 5
+
+        if self.lab31var.get():
+            score += 10
+        if self.lab32var.get():
+            score += 5
+
+        if self.lab33var.get():
+            score += 10
+        if self.lab34var.get():
+            score += 5
+        if self.lab35var.get():
+            score += 2
+
+        # تكملة المحور الثاني
+        if hasattr(self, 'new_window2'):
+            if self.new_window2.lab36var.get():
+                score += 5
+            if self.new_window2.lab37var.get():
+                score += 5
+            if self.new_window2.lab38var.get():
+                score += 5
+            if self.new_window2.lab39var.get():
+                score += 5
+            if self.new_window2.lab40var.get():
+                score += 5
+            if self.new_window2.lab41var.get():
+                score += 5
+            if self.new_window2.lab42var.get():
+                score += 5
+            if self.new_window2.lab43var.get():
+                score += 5
+            if self.new_window2.lab44var.get():
+                score += 5
+            if self.new_window2.lab45var.get():
+                score += 5
+            if self.new_window2.lab46var.get():
+                score += 5
+            if self.new_window2.lab47var.get():
+                score += 5
+
+            if self.new_window2.lab48var.get():
+                score += 8
+            if self.new_window2.lab49var.get():
+                score += 6
+            if self.new_window2.lab50var.get():
+                score += 4
+            if self.new_window2.lab51var.get():
+                score += 3
+            if self.new_window2.lab52var.get():
+                score += 3
+            if self.new_window2.lab53var.get():
+                score += 3
+            if self.new_window2.lab54var.get():
+                score += 3
+            if self.new_window2.lab55var.get():
+                score += 3
+            if self.new_window2.lab56var.get():
+                score += 3
+            if self.new_window2.lab57var.get():
+                score += 3
+            if self.new_window2.lab58var.get():
+                score += 3
+        return score * 40 / 100
 
 class TherdSidewindow(ctk.CTkToplevel):
     def __init__(self, master, login_window):
         super().__init__(master)
         self.login_window = login_window
         self.db = login_window.db
-        self.geometry("900x700+350+30")
+        self.geometry("900x500+350+30")
         self.title(" المحور الثالث")
-        self.rowconfigure(0, weight=1)
-        self.columnconfigure(0, weight=1)
-        self.config(bg='#DDF2FD')
+        self.config(bg='#141E46')
 
-        btgo = tk.Button(self, text=" المحور الرابع   ", command=self.go2)
-        btgo.pack()
-
-        lab1 = tk.Label(self, text="الجانب التربوي والتكليفات الاخرى", font=("arial", 20, "bold"))
+        lab1 = tk.Label(self, text="الجانب التربوي والتكليفات الاخرى", font=("thesans", 18), fg="#ff6600", bg="#141E46")
         lab1.place(x=800, y=20)
 
-        lab2 = tk.Label(self, text="المساهمة في خدمة الموسسات العلمية خارج وزارة التعليم", font=("arial", 20, "bold"))
+        lab2 = tk.Label(self, text="المساهمة في خدمة الموسسات العلمية خارج وزارة التعليم", font=("thesans", 15), fg="#41B06E", bg="#141E46")
         lab2.place(x=600, y=80)
 
-        lab3 = tk.Label(self, text="عضو لجنة امتحانية", font=("arial", 16))
+        lab3 = tk.Label(self, text="عضو لجنة امتحانية", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab3.place(x=950, y=120)
         self.lab3var = tk.BooleanVar()
         lab3chk = tk.Checkbutton(self, variable=self.lab3var)
         lab3chk.place(x=900, y=120)
 
-        lab4 = tk.Label(self, text="عضو لجنة دائمية", font=("arial", 16))
+        lab4 = tk.Label(self, text="عضو لجنة دائمية", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab4.place(x=750, y=120)
         self.lab4var = tk.BooleanVar()
         lab4chk = tk.Checkbutton(self, variable=self.lab4var)
         lab4chk.place(x=700, y=120)
 
-        lab5 = tk.Label(self, text="عضو لجنة موقتة", font=("arial", 16))
+        lab5 = tk.Label(self, text="عضو لجنة موقتة", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab5.place(x=550, y=120)
         self.lab5var = tk.BooleanVar()
         lab5chk = tk.Checkbutton(self, variable=self.lab5var)
         lab5chk.place(x=500, y=120)
 
-        lab6 = tk.Label(self, text="الالتزام الوظيفي", font=("arial", 16))
+        lab6 = tk.Label(self, text="الالتزام الوظيفي", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab6.place(x=950, y=180)
         self.lab6var = tk.BooleanVar()
         lab6chk = tk.Checkbutton(self, variable=self.lab6var)
         lab6chk.place(x=900, y=180)
 
-        lab7 = tk.Label(self, text="اساليب التعامل مع الطلبة وتقديم المهارات الارشادية", font=("arial", 16))
+        lab7 = tk.Label(self, text="اساليب التعامل مع الطلبة وتقديم المهارات الارشادية", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab7.place(x=700, y=240)
         self.lab7var = tk.BooleanVar()
         lab7chk = tk.Checkbutton(self, variable=self.lab7var)
         lab7chk.place(x=650, y=240)
 
         lab8 = tk.Label(self, text="كتب الشكر والتقدير او الشهادة التقديرية خلال عام التقدير",
-                        font=("arial", 20, "bold"))
+                        font=("thesans", 15), fg="#41B06E", bg="#141E46")
         lab8.place(x=600, y=300)
 
-        lab9 = tk.Label(self, text="وزيراو مايعادل درجته", font=("arial", 16))
+        lab9 = tk.Label(self, text="وزير او مايعادل درجته", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab9.place(x=950, y=360)
         self.lab9var = tk.BooleanVar()
         lab9chk = tk.Checkbutton(self, variable=self.lab9var)
         lab9chk.place(x=900, y=360)
 
-        lab10 = tk.Label(self, text="وكيل وزير اورئيس جامعة", font=("arial", 16))
+        lab10 = tk.Label(self, text="وكيل وزير او رئيس جامعة", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab10.place(x=700, y=360)
         self.lab10var = tk.BooleanVar()
         lab10chk = tk.Checkbutton(self, variable=self.lab10var)
         lab10chk.place(x=650, y=360)
 
-        lab11 = tk.Label(self, text="مساعد رئيس الجامعةاوعميد", font=("arial", 16))
+        lab11 = tk.Label(self, text="مساعد رئيس الجامعة او عميد", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab11.place(x=400, y=360)
         self.lab11var = tk.BooleanVar()
         lab11chk = tk.Checkbutton(self, variable=self.lab11var)
         lab11chk.place(x=350, y=360)
 
-        lab12 = tk.Label(self, text="مشاركته في الاعمال التطوعية داخل الجامعة او خارجها", font=("arial", 20, "bold"))
+        lab12 = tk.Label(self, text="مشاركته في الاعمال التطوعية داخل الجامعة او خارجها", font=("thesans", 15), fg="#41B06E", bg="#141E46")
         lab12.place(x=600, y=400)
 
-        lab13 = tk.Label(self, text="حملات التشجير", font=("arial", 16))
+        lab13 = tk.Label(self, text="حملات التشجير", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab13.place(x=900, y=440)
         self.lab13var = tk.BooleanVar()
         lab13chk = tk.Checkbutton(self, variable=self.lab13var)
         lab13chk.place(x=850, y=440)
 
-        lab14 = tk.Label(self, text="التبرع في ترميم وصبغ الابنية", font=("arial", 16))
+        lab14 = tk.Label(self, text="التبرع في ترميم وصبغ الابنية", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab14.place(x=900, y=480)
         self.lab14var = tk.BooleanVar()
         lab14chk = tk.Checkbutton(self, variable=self.lab14var)
         lab14chk.place(x=850, y=480)
 
-        lab15 = tk.Label(self, text="تصليح الاجهزة وصيانتها", font=("arial", 16))
+        lab15 = tk.Label(self, text="تصليح الاجهزة وصيانتها", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab15.place(x=900, y=520)
         self.lab15var = tk.BooleanVar()
         lab15chk = tk.Checkbutton(self, variable=self.lab15var)
         lab15chk.place(x=850, y=520)
 
-        lab16 = tk.Label(self, text="التبرع باجهزة متنوعة وبالكتب", font=("arial", 16))
+        lab16 = tk.Label(self, text="التبرع باجهزة متنوعة وبالكتب", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab16.place(x=900, y=560)
         self.lab16var = tk.BooleanVar()
         lab16chk = tk.Checkbutton(self, variable=self.lab16var)
         lab16chk.place(x=850, y=560)
 
-        lab17 = tk.Label(self, text="عمل البوسترات التوعوية", font=("thesans", 16))
+        lab17 = tk.Label(self, text="عمل البوسترات التوعوية", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab17.place(x=900, y=600)
         self.lab17var = tk.BooleanVar()
         lab17chk = tk.Checkbutton(self, variable=self.lab17var)
         lab17chk.place(x=850, y=600)
 
-        lab18 = tk.Label(self, text="اخرى :", font=("arial", 16))
+        lab18 = tk.Label(self, text="اخرى :", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab18.place(x=900, y=640)
         self.lab18var = tk.BooleanVar()
         lab18chk = tk.Checkbutton(self, variable=self.lab18var)
         lab18chk.place(x=850, y=640)
 
-        calc_button = tk.Button(self, text="حساب النقاط")
-        calc_button.place(x=50, y=650)
+        btgo = tk.Button(self, text="المحور الرابع", command=self.go2, font=("thesans", 16), fg="#fff", bg="#ff6600")
+        btgo.pack(side='bottom', pady=10)
 
-        self.score_label = tk.Label(self, text="النقاط: 0", font=("thesans", 20))
-        self.score_label.place(x=200, y=650)
-
-        insert_button = tk.Button(self, text="حفظ النتيجة", command=self.insert_to_database)
-        insert_button.place(x=50, y=700)
-
-        def show_score():
-            score = self.calculate_third_side_score()
-            self.score_label.config(text=f"النقاط: {score}", font=("thesans", 20))
-
-        calc_button.config(command=show_score)
 
     def go2(self):
         self.destroy()
         self.second_sidewindow = ForthSidewindow(self.master, self.login_window)
         self.second_sidewindow.deiconify()
 
-    def calculate_third_side_score(self):
-        score = 0
-
-        if self.lab3var.get():
-            score += 10
-        if self.lab4var.get():
-            score += 10
-        if self.lab5var.get():
-            score += 10
-        if self.lab6var.get():
-            score += 10
-        if self.lab7var.get():
-            score += 10
-        if self.lab9var.get():
-            score += 10
-        if self.lab10var.get():
-            score += 10
-        if self.lab11var.get():
-            score += 10
-        if self.lab13var.get():
-            score += 10
-        if self.lab14var.get():
-            score += 10
-        if self.lab15var.get():
-            score += 10
-        if self.lab16var.get():
-            score += 10
-        if self.lab17var.get():
-            score += 10
-        if self.lab18var.get():
-            score += 10
-        return score
-
-    def insert_to_database(self):
+        # تلقائيا يحفظ البيانات بعد الانتقال للواجهة الثانية
         score = self.calculate_third_side_score()
         username = self.login_window.username_entry.get()
         self.cursor = self.db.cursor()
@@ -1323,32 +1304,61 @@ class TherdSidewindow(ctk.CTkToplevel):
         self.cursor.execute("UPDATE results SET side_three_score = %s WHERE user_id = %s", (score, user_id))
         self.db.commit()
 
-        if self.cursor.rowcount > 0:
-            messagebox.showinfo("Success", "تم حفظ النتيجة بنجاح")
+    def calculate_third_side_score(self):
+        score = 0
 
+        if self.lab3var.get():
+            score += 20
+        if self.lab4var.get():
+            score += 10
+        if self.lab5var.get():
+            score += 5
+        if self.lab6var.get():
+            score += 4
+        if self.lab7var.get():
+            score += 3
+        if self.lab9var.get():
+            score += 15
+        if self.lab10var.get():
+            score += 10
+        if self.lab11var.get():
+            score += 5
+        if self.lab13var.get():
+            score += 3
+        if self.lab14var.get():
+            score += 3
+        if self.lab15var.get():
+            score += 3
+        if self.lab16var.get():
+            score += 3
+        if self.lab17var.get():
+            score += 3
+        if self.lab18var.get():
+            score += 3
+        return score * 20 / 100
 
 class ForthSidewindow(ctk.CTkToplevel):
     def __init__(self, master, login_window):
         super().__init__(master)
         self.login_window = login_window
         self.db = login_window.db
-        self.geometry("900x700+350+30")
+        self.geometry("900x400+350+30")
         self.title(" المحور الرابع")
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
-        self.config(bg='#DDF2FD')
+        self.config(bg='#141E46')
 
-        lab1 = tk.Label(self, text="المحور الرابع :مواطن القوة", font=("thesans", 20, "bold"))
+        lab1 = tk.Label(self, text="المحور الرابع :مواطن القوة", font=("thesans", 16), fg="#41B06E", bg="#141E46")
         lab1.place(x=850, y=30)
 
-        lab2 = tk.Label(self, text="براءت اختراع  و الجوائز في عام التقييم حصرا ", font=("thesans", 16))
+        lab2 = tk.Label(self, text="براءت اختراع  و الجوائز في عام التقييم حصرا ", font=("thesans", 16), fg="#fff", bg="#141E46")
         lab2.place(x=800, y=80)
         self.lab2var = tk.BooleanVar()
         lab2chk = tk.Checkbutton(self, variable=self.lab2var)
         lab2chk.place(x=750, y=80)
 
         lab3 = tk.Label(self, text="امتلاك التدريسي لمعامل هيرش او سكور في بوابات البحث الحد الادنى 1",
-                        font=("thesans", 16))
+                        font=("thesans", 16), fg="#fff", bg="#141E46")
         lab3.place(x=620, y=120)
 
         self.lab3var = tk.IntVar()
@@ -1356,14 +1366,14 @@ class ForthSidewindow(ctk.CTkToplevel):
         lab3entry = tk.Entry(self, textvariable=self.lab3var)
         lab3entry.place(x=450, y=120)
 
-        lab4 = tk.Label(self, text="مسؤول وحدة تمكين المرأة وجميع العاملين معهم", font=("thesans", 16))
+        lab4 = tk.Label(self, text="مسؤول وحدة تمكين المرأة وجميع العاملين معهم", font=("thesans", 16), fg="#fff", bg="#141E46")
         lab4.place(x=750, y=180)
         self.lab4var = tk.BooleanVar()
         lab4chk = tk.Checkbutton(self, variable=self.lab4var)
         lab4chk.place(x=700, y=180)
 
         lab5 = tk.Label(self, text="تطوير منظومة الكترونية لادارة احد البرامج على مستوى الجامعة او الوزارة",
-                        font=("thesans", 16))
+                        font=("thesans", 16), fg="#fff", bg="#141E46")
         lab5.place(x=550, y=220)
         self.lab5var = tk.BooleanVar()
         lab5chk = tk.Checkbutton(self, variable=self.lab5var)
@@ -1371,51 +1381,21 @@ class ForthSidewindow(ctk.CTkToplevel):
 
         lab6 = tk.Label(self,
                         text="مدراء اقسام ضمان الجودة والاداء الجامعي وجميع العاملين معهم كمسؤولي شعب واعضاء ارتباط",
-                        font=("arial", 16))
+                        font=("thesans", 16), fg="#fff", bg="#141E46")
         lab6.place(x=450, y=270)
         self.lab6var = tk.BooleanVar()
         lab6chk = tk.Checkbutton(self, variable=self.lab6var)
         lab6chk.place(x=400, y=270)
 
-        calc_button = tk.Button(self, text="حساب النقاط")
-        calc_button.place(x=50, y=650)
+        self.fifth_btn = tk.Button(self, text='المحور الخامس', command=self.changetofifhtwindwo, font=("thesans", 16), fg="#fff", bg="#ff6600")
+        self.fifth_btn.pack(side='bottom', pady=10)
 
-        self.score_label = tk.Label(self, text="النقاط: 0", font=("thesans", 20))
-        self.score_label.place(x=200, y=650)
-
-        insert_button = tk.Button(self, text="حفظ النتيجة", command=self.insert_to_database)
-        insert_button.place(x=50, y=700)
-
-        self.final_result_button = tk.Button(self, text='النتيجة النهائية', command=self.changetofinalresult)
-        self.final_result_button.pack()
-
-        def show_score():
-            score = self.calculate_forth_side_score()
-            self.score_label.config(text=f"النقاط: {score}", font=("thesans", 20))
-
-        calc_button.config(command=show_score)
-
-    def changetofinalresult(self):
+    def changetofifhtwindwo(self):
         self.destroy()
-        finalresult = FinalResult(self.master, self.login_window)
-        finalresult.deiconify()
+        fifthside = fifthsidewindow(self.master, self.login_window)
+        fifthside.deiconify()
 
-    def calculate_forth_side_score(self):
-        score = 0
-
-        if self.lab2var.get():
-            score += 10
-        if self.lab3var.get() >= 1:
-            score += 10
-        if self.lab4var.get():
-            score += 10
-        if self.lab5var.get():
-            score += 10
-        if self.lab6var.get():
-            score += 10
-        return score
-
-    def insert_to_database(self):
+        # تلقائيا يحفظ البيانات بعد الانتقال للواجهة الثانية
         score = self.calculate_forth_side_score()
         username = self.login_window.username_entry.get()
         self.cursor = self.db.cursor()
@@ -1425,36 +1405,134 @@ class ForthSidewindow(ctk.CTkToplevel):
         self.cursor.execute("UPDATE results SET side_four_score = %s WHERE user_id = %s", (score, user_id))
         self.db.commit()
 
-        if self.cursor.rowcount > 0:
-            messagebox.showinfo("Success", "تم حفظ النتيجة بنجاح")
+    def calculate_forth_side_score(self):
+        score = 0
 
-class FinalResult(ctk.CTkToplevel):
+        if self.lab2var.get():
+            score += 3
+
+        if self.lab3var.get() > 7:
+            score += 3
+        if self.lab3var.get() == 4 or 5 or 6:
+            score += 2
+        if self.lab3var.get() == 1 or 2 or 3:
+            score += 1
+
+        if self.lab4var.get():
+            score += 3
+        if self.lab5var.get():
+            score += 3
+        if self.lab6var.get():
+            score += 5
+        return score
+
+
+
+class fifthsidewindow(ctk.CTkToplevel):
     def __init__(self, master, login_window):
         super().__init__(master)
         self.login_window = login_window
         self.db = login_window.db
-        self.geometry("600x400")
-        self.config(bg='#fff')
-        self.title('final result')
-        self.resizable(0,0)
-        self.username = self.login_window.username_entry.get()
+        self.geometry("650x400+350+30")
+        self.title(" المحور الخامس")
+        self.config(bg="#141E46")
+        self.resizable(0, 0)
 
-        lab1 = tk.Label(self, text="النتيجة النهائية", font=("thesans", 20, "bold"))
-        lab1.pack()
 
-        insert_button = tk.Button(self, text='حفظ النتيجة', command=self.insert_final_result, font=("thesans", 16, "bold"))
-        insert_button.pack()
+        header = tk.Frame(self, bg='#141E46')
+        header.pack(fill='x')
 
-        display_button = tk.Button(self, text='عرض النتيجة النهائية', command=self.display_final_result, font=("thesans", 16, "bold"))
-        display_button.pack()
+        title = tk.Label(header, text='المحور الخامس (العقوبات)', font=("thesans", 16), fg="#ff6600", bg='#141E46')
+        title.pack()
 
-    def insert_final_result(self):
+        final_result_btn = tk.Button(self, text='النتيجة النهائية', command=self.changetofinalresult,
+                                     font=("thesans", 16), bg="#ff6600", fg="#fff", border=0)
+        final_result_btn.pack(side='bottom', padx=10, pady=10)
+
+        label1 = tk.Label(self, text="لفت النظر", font=("thesans", 16), bg='#141E46', fg='#41B06E')
+        label1.pack(side='right', padx=10, pady=10)
+
+        self.label1_var = tk.BooleanVar()
+        label1_chk = tk.Checkbutton(self, variable=self.label1_var)
+        label1_chk.pack(side='right', padx=10, pady=10)
+
+        label2 = tk.Label(self, text="الانذار", font=("thesans", 16), bg='#141E46', fg='#41B06E')
+        label2.pack(side='right', padx=10, pady=10)
+
+        self.label2_var = tk.BooleanVar()
+        label2_chk = tk.Checkbutton(self, variable=self.label2_var)
+        label2_chk.pack(side='right', padx=10, pady=10)
+
+        label3 = tk.Label(self, text="قطع الراتب", font=("thesans", 16), bg='#141E46', fg='#41B06E')
+        label3.pack(side='right', padx=10, pady=10)
+
+        self.label3_var = tk.BooleanVar()
+        label3_chk = tk.Checkbutton(self, variable=self.label3_var)
+        label3_chk.pack(side='right', padx=10, pady=10)
+
+        label4 = tk.Label(self, text="التوبيخ ", font=("thesans", 16), bg='#141E46', fg='#41B06E')
+        label4.pack(side='right', padx=10, pady=10)
+
+        self.label4_var = tk.BooleanVar()
+        label4_chk = tk.Checkbutton(self, variable=self.label4_var)
+        label4_chk.pack(side='right', padx=10, pady=10)
+
+        label5 = tk.Label(self, text="انقاص الراتب", font=("thesans", 16), bg='#141E46', fg='#41B06E')
+        label5.pack(side='right', padx=10, pady=10)
+
+        self.label5_var = tk.BooleanVar()
+        label5_chk = tk.Checkbutton(self, variable=self.label5_var)
+        label5_chk.pack(side='right', padx=10, pady=10)
+
+        label6 = tk.Label(self, text="تنزيل الدرجة", font=("thesans", 16), bg='#141E46', fg='#41B06E')
+        label6.pack(side='right', padx=10, pady=10)
+
+        self.label6_var = tk.BooleanVar()
+        label6_chk = tk.Checkbutton(self, variable=self.label6_var)
+        label6_chk.pack(side='right', padx=10, pady=10)
+
+
+    def calculate_fifth_side_score(self):
+        score = 0
+        if self.label1_var.get():
+                score -= 3
+        if self.label2_var.get():
+                score -= 5
+        if self.label3_var.get():
+                score -= 7
+        if self.label4_var.get():
+                score -= 11
+        if self.label5_var.get():
+                score -= 13
+        if self.label6_var.get():
+                score -= 15
+        return score
+
+    def changetofinalresult(self):
+        self.withdraw()
+        finalresult = FinalResult(self.master, self.login_window)
+        finalresult.deiconify()
+
+        # تلقائيا يحفظ البيانات بعد الانتقال للواجهة الثانية
+        score = self.calculate_fifth_side_score()
         username = self.login_window.username_entry.get()
         self.cursor = self.db.cursor()
         self.cursor.execute("SELECT id FROM users WHERE username=%s", (username,))
         user_id = self.cursor.fetchone()[0]
 
-        self.cursor.execute("SELECT side_one_score, side_two_score, side_three_score, side_four_score FROM results WHERE user_id = %s", (user_id,))
+        self.cursor.execute("UPDATE results SET side_fifth_score = %s WHERE user_id = %s", (score, user_id))
+        self.db.commit()
+
+        #تلقائيا يحفظ النتيجة النهائية بعد الانتقال للواجهة النهائية
+
+        username = self.login_window.username_entry.get()
+        self.cursor = self.db.cursor()
+        self.cursor.execute("SELECT id FROM users WHERE username=%s", (username,))
+        user_id = self.cursor.fetchone()[0]
+
+        self.cursor.execute(
+            "SELECT side_one_score, side_two_score, side_three_score, side_four_score, side_fifth_score FROM results WHERE user_id = %s",
+            (user_id,))
         result = self.cursor.fetchone()
         total_score = sum(result)
         self.cursor.execute("UPDATE results SET total_score = %s WHERE user_id = %s", (total_score, user_id))
@@ -1463,35 +1541,68 @@ class FinalResult(ctk.CTkToplevel):
         if self.cursor.rowcount > 0:
             messagebox.showinfo("Success", "تم حفظ النتيجة النهائية بنجاح")
 
-    def display_final_result(self):
+class FinalResult(ctk.CTkToplevel):
+    def __init__(self, master, login_window):
+        super().__init__(master)
+        self.login_window = login_window
+        self.master = master
+        self.db = login_window.db
+        self.geometry("600x400+500+200")
+        self.config(bg='#141E46')
+        self.title('النتيجة النهائية')
+        self.resizable(0,0)
+        self.username = self.login_window.username_entry.get()
+
+        header = tk.Frame(self, bg='#141E46')
+        header.pack(fill='x')
+        title = tk.Label(header, text='النتيجة النهائية', font=("thesans", 20), bg='#141E46', fg='#ff6600')
+        title.pack(padx=10, pady=10)
+
         username = self.login_window.username_entry.get()
         self.cursor = self.db.cursor()
         self.cursor.execute("SELECT id FROM users WHERE username=%s", (username,))
         user_id = self.cursor.fetchone()[0]
 
-        self.cursor.execute("SELECT side_one_score, side_two_score, side_three_score, side_four_score, total_score FROM results WHERE user_id = %s", (user_id,))
+        self.cursor.execute("SELECT side_one_score, side_two_score, side_three_score, side_four_score, side_fifth_score, total_score FROM results WHERE user_id = %s", (user_id,))
         result = self.cursor.fetchone()
 
         side_one_score = result[0]
         side_two_score = result[1]
         side_three_score = result[2]
         side_four_score = result[3]
-        total_score = result[4]
+        side_fifth_score = result[4]
+        total_score = result[5]
 
-        first_side_label = tk.Label(self, text=f"النقاط المحور الاول: {side_one_score}", font=("thesans", 16, "bold"))
+        first_side_label = tk.Label(self, text=f" المحور الاول: {side_one_score}", font=("thesans", 18, "bold"), fg='#41B06E', bg='#141E46')
         first_side_label.pack()
 
-        second_side_label = tk.Label(self, text=f" المحور الثاني: {side_two_score}", font=("thesans", 16, "bold"))
+        second_side_label = tk.Label(self, text=f" المحور الثاني: {side_two_score}", font=("thesans", 18, "bold"), fg='#41B06E', bg='#141E46')
         second_side_label.pack()
 
-        third_side_label = tk.Label(self, text=f" المحور الثالث: {side_three_score}", font=("thesans", 16, "bold"))
+        third_side_label = tk.Label(self, text=f" المحور الثالث: {side_three_score}", font=("thesans", 18, "bold"), fg='#41B06E', bg='#141E46')
         third_side_label.pack()
 
-        forth_side_label = tk.Label(self, text=f" المحور الرابع: {side_four_score}", font=("thesans", 16, "bold"))
+        forth_side_label = tk.Label(self, text=f" المحور الرابع: {side_four_score}", font=("thesans", 18, "bold"), fg='#41B06E', bg='#141E46')
         forth_side_label.pack()
 
-        total_score_label = tk.Label(self, text=f" النهائية: {total_score}", font=("thesans", 16, "bold"))
+        fifth_side_label = tk.Label(self, text=f" المحور الخامس: {side_fifth_score}", font=("thesans", 18, "bold"), fg='#41B06E', bg='#141E46')
+        fifth_side_label.pack()
+
+        total_score_label = tk.Label(self, text=f" النتيجة النهائية: {total_score}", font=("thesans", 18, "bold"), fg='#41B06E', bg='#141E46')
         total_score_label.pack()
+
+
+        if total_score >= 90:
+            result = "ممتاز"
+        elif total_score >= 80 < 90:
+            result = "جيد جدا"
+        elif total_score >= 70 < 80:
+            result = "جيد"
+        elif total_score < 70:
+            result = "ضعيف"
+
+        result_label = tk.Label(self, text=f"التقدير: {result}", font=("thesans", 18, "bold"), fg='#ff6600', bg='#141E46')
+        result_label.pack()
 
 ctk.set_appearance_mode('dark')
 root = ctk.CTk()
