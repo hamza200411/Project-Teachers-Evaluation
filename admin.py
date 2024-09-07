@@ -178,10 +178,6 @@ class new_teacher(ctk.CTkToplevel):
 
         self.return_btn.config(command=lambda: return_home())
 
-        self.cursor = self.db.cursor()
-        self.cursor.execute("CREATE DATABASE IF NOT EXISTS `teachers`")
-        self.cursor.execute("CREATE TABLE IF NOT EXISTS users (id INT AUTO_INCREMENT PRIMARY KEY, fullname VARCHAR(100), username VARCHAR(100) UNIQUE NOT NULL, college VARCHAR(255), department VARCHAR(100), password VARCHAR(32), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)")
-
         def register():
 
             fullname = fullname_entry.get()
@@ -216,7 +212,7 @@ class new_teacher(ctk.CTkToplevel):
 
             # Insert new user into the database
             self.cursor.execute("INSERT INTO users (fullname, username, college, department, password) VALUES (%s, %s, %s, %s, %s)", (fullname, username, college, department, password))
-            messagebox.showinfo('success', 'Registeration Successful')
+            messagebox.showinfo('success', 'تم التسجيل بنجاح')
             self.db.commit()
 
             # Clear the entry fields

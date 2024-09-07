@@ -37,6 +37,7 @@ class LoginWindow:
         self.master.title("نظام تقييم الاداء الالكتروني")
         self.master.geometry('400x350+600+200')
         self.master.resizable(False, False)
+        
 
         self.welcome_label = tk.Label(master, text="نظام تقييم اداء تدريسي\n كلية علوم الحاسوب والرياضيات",
                                       fg='#ff6600', bg='#141E46', font=('thesans', 20))
@@ -105,6 +106,7 @@ class Sidebar(ctk.CTkToplevel):
         self.rowconfigure((0, 2, 3, 4, 5, 6), weight=1)
         self.columnconfigure((0, 1, 2, 3, 4, 5), weight=1)
         self.config(bg='#fff')
+        self.resizable(0, 0)
 
         self.menu_icon = tk.PhotoImage(file='icons/menu.png')
         self.close_icon = tk.PhotoImage(file='icons/close.png')
@@ -175,22 +177,22 @@ class Sidebar(ctk.CTkToplevel):
 
         #check if the user has already submitted the evaluation
         self.cursor.execute("SELECT * FROM results WHERE user_id=%s", (user_info[0],))
-        result = self.cursor.fetchone()
-        if result:
-            alert_label.grid(row=6, column=0, sticky='news')
-            final_result_btn = tk.Button(self.info_frame, text='النتيجة النهائية', font=('thesans', 18), fg='#FF6600',
-                                         command=self.change_to_final_result)
-            final_result_btn.grid(row=7, column=0, sticky='news')
-        else:
-            if datetime.datetime.now() < datetime.datetime.strptime(start_date, '%Y-%m-%d'):
-                alert_label = tk.Label(self.info_frame, text=f'التقديم سيكون متاحا من تاريخ {start_date}', font=('thesans', 18), fg='#141E46')
-                alert_label.grid(row=6, column=0, sticky='news')
-            elif datetime.datetime.now() > datetime.datetime.strptime(end_date, '%Y-%m-%d'):
-                alert_label = tk.Label(self.info_frame, text=f'تم انتهاء التقديم في تاريخ {end_date}', font=('thesans', 18), fg='#141E46')
-                alert_label.grid(row=6, column=0, sticky='news')
-            else:
-                next_btn = tk.Button(self.info_frame, text='المحور الاول', font=('thesans', 18), fg='#FF6600', command=self.changetooside)
-                next_btn.grid(row=6, column=0, sticky='news')
+        resulted = self.cursor.fetchone()
+        # if resulted:
+        #     alert_label.grid(row=6, column=0, sticky='news')
+        #     final_result_btn = tk.Button(self.info_frame, text='النتيجة النهائية', font=('thesans', 18), fg='#FF6600',
+        #                                  command=self.change_to_final_result)
+        #     final_result_btn.grid(row=7, column=0, sticky='news')
+        # else:
+        #     if datetime.datetime.now() < datetime.datetime.strptime(start_date, '%Y-%m-%d'):
+        #         alert_label = tk.Label(self.info_frame, text=f'التقديم سيكون متاحا من تاريخ {start_date}', font=('thesans', 18), fg='#141E46')
+        #         alert_label.grid(row=6, column=0, sticky='news')
+        #     elif datetime.datetime.now() > datetime.datetime.strptime(end_date, '%Y-%m-%d'):
+        #         alert_label = tk.Label(self.info_frame, text=f'تم انتهاء التقديم في تاريخ {end_date}', font=('thesans', 18), fg='#141E46')
+        #         alert_label.grid(row=6, column=0, sticky='news')
+        #     else:
+        next_btn = tk.Button(self.info_frame, text='المحور الاول', font=('thesans', 18), fg='#FF6600', command=self.changetooside)
+        next_btn.grid(row=6, column=0, sticky='news')
 
         for wed in self.info_frame.winfo_children():
             wed.configure(bg='#fff', fg='#141E46')
@@ -262,7 +264,7 @@ class FirstSidewindow(ctk.CTkToplevel):
 
         lab1 = tk.Label(self, text=" المحور الاول :التدريس (40%) يملى من قبل اللجنة العلمية",
                         font=("thesans", 20), fg="#ff6600", bg="#141E46")
-        lab1.place(x=270, y=20)
+        lab1.pack()
 
         lab2 = tk.Label(self,
                         text="عددالمقررات التي قام بتدريسها تمنح10د لكل مقرر دراسي (اولية او عليا) (نظري او عملي)",
@@ -399,7 +401,7 @@ class FirstSidewindow(ctk.CTkToplevel):
         lab21chek = tk.Checkbutton(self, variable=self.one_lab21var)
         lab21chek.place(x=550, y=840)
 
-        button_complate = tk.Button(self, text="تكملة المحور الاول", command=self.comp , font=("thesans", 16), fg="#fff", bg="#ff6600")
+        button_complate = tk.Button(self, text="تكملة المحور الاول", command=self.comp, font=("thesans", 16), fg="#fff", bg="#ff6600")
         button_complate.pack(side='bottom', pady=10)
 
     def comp(self):
@@ -418,7 +420,7 @@ class FirstSidewindow(ctk.CTkToplevel):
         lab1.place(x=850, y=30)
 
         lab2 = tk.Label(self.new_window,
-                        text="يستخدم اساليب متنوعة لتقيم اداء الطلة مثل اختبارات تحريرية , شفوية ,ادائية , تقارير الكترونية ,انشطة الكترونيةو ",
+                        text="يستخدم اساليب متنوعة لتقيم اداء الطلبة مثل اختبارات تحريرية , شفوية ,ادائية , تقارير الكترونية ,انشطة الكترونية و ",
                         font=("thesans", 15), fg="#fff", bg="#141E46")
         lab2.place(x=330, y=100)
 
@@ -1523,23 +1525,6 @@ class fifthsidewindow(ctk.CTkToplevel):
         self.cursor.execute("UPDATE results SET side_fifth_score = %s WHERE user_id = %s", (score, user_id))
         self.db.commit()
 
-        #تلقائيا يحفظ النتيجة النهائية بعد الانتقال للواجهة النهائية
-
-        username = self.login_window.username_entry.get()
-        self.cursor = self.db.cursor()
-        self.cursor.execute("SELECT id FROM users WHERE username=%s", (username,))
-        user_id = self.cursor.fetchone()[0]
-
-        self.cursor.execute(
-            "SELECT side_one_score, side_two_score, side_three_score, side_four_score, side_fifth_score FROM results WHERE user_id = %s",
-            (user_id,))
-        result = self.cursor.fetchone()
-        total_score = sum(result)
-        self.cursor.execute("UPDATE results SET total_score = %s WHERE user_id = %s", (total_score, user_id))
-        self.db.commit()
-
-        if self.cursor.rowcount > 0:
-            messagebox.showinfo("Success", "تم حفظ النتيجة النهائية بنجاح")
 
 class FinalResult(ctk.CTkToplevel):
     def __init__(self, master, login_window):
@@ -1557,9 +1542,29 @@ class FinalResult(ctk.CTkToplevel):
         header.pack(fill='x')
         title = tk.Label(header, text='النتيجة النهائية', font=("thesans", 20), bg='#141E46', fg='#ff6600')
         title.pack(padx=10, pady=10)
-
+        
+        display_result = tk.Button(self, text="حفظ و عرض النتيجة", fg='#141E46', bg='#fff', font=("thesans", 15), command=self.display_and_save)
+        display_result.pack()
+    
+    def display_and_save(self):
         username = self.login_window.username_entry.get()
         self.cursor = self.db.cursor()
+        self.cursor.execute("SELECT id FROM users WHERE username=%s", (username,))
+        user_id = self.cursor.fetchone()[0]
+
+        self.cursor.execute(
+            "SELECT side_one_score, side_two_score, side_three_score, side_four_score, side_fifth_score FROM results WHERE user_id = %s",
+            (user_id,))
+        result = self.cursor.fetchone()
+        total_score = sum(result)
+        self.cursor.execute("UPDATE results SET total_score = %s WHERE user_id = %s", (total_score, user_id))
+        self.db.commit()
+
+        if self.cursor.rowcount > 0:
+            messagebox.showinfo("Success", "تم حفظ النتيجة النهائية بنجاح")
+
+
+        username = self.login_window.username_entry.get()
         self.cursor.execute("SELECT id FROM users WHERE username=%s", (username,))
         user_id = self.cursor.fetchone()[0]
 
@@ -1591,18 +1596,17 @@ class FinalResult(ctk.CTkToplevel):
         total_score_label = tk.Label(self, text=f" النتيجة النهائية: {total_score}", font=("thesans", 18, "bold"), fg='#41B06E', bg='#141E46')
         total_score_label.pack()
 
-
         if total_score >= 90:
-            result = "ممتاز"
+            rate = "امتياز"
         elif total_score >= 80 < 90:
-            result = "جيد جدا"
+            rate = "جيد جدا"
         elif total_score >= 70 < 80:
-            result = "جيد"
+            rate = "جيد"
         elif total_score < 70:
-            result = "ضعيف"
+            rate = "ضعيف"
 
-        result_label = tk.Label(self, text=f"التقدير: {result}", font=("thesans", 18, "bold"), fg='#ff6600', bg='#141E46')
-        result_label.pack()
+        rate_label = tk.Label(self, text=f"التقدير: {rate}", font=("thesans", 18, "bold"), fg='#ff6600', bg='#141E46')
+        rate_label.pack()
 
 ctk.set_appearance_mode('dark')
 root = ctk.CTk()
