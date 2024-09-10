@@ -8,6 +8,4 @@
 
 ![النتيجة النهائية 9_5_2024 3_15_43 AM](https://github.com/user-attachments/assets/46fd86e7-2fec-4ac3-b3fb-c72375f53a1c)
 
-![المشرف 5_8_2024 7_37_45 PM](https://github.com/user-attachments/assets/753fd6cd-b647-48f5-8c9c-cb1f2969442c)
-
 Developed &  Designed by Hamza & laith
