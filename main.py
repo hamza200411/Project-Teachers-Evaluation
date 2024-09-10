@@ -1,4 +1,3 @@
-import datetime
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
@@ -6,7 +5,6 @@ import mysql.connector
 from mysql.connector import Error
 import customtkinter as ctk
 import configparser
-
 
 def load_database():
     config = configparser.ConfigParser()
@@ -30,6 +28,68 @@ def database_connection():
         database=db_config['database']
     )
 
+def create_tables():
+    connection = database_connection()
+    cursor = connection.cursor()
+
+    # إنشاء جدول users
+    create_users_table = """
+    CREATE TABLE IF NOT EXISTS `users` (
+      `id` int NOT NULL AUTO_INCREMENT,
+      `fullname` varchar(100) NOT NULL,
+      `username` varchar(100) NOT NULL,
+      `college` varchar(255) DEFAULT NULL,
+      `department` varchar(100) DEFAULT NULL,
+      `password` varchar(255) NOT NULL,
+      `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+      `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      PRIMARY KEY (`id`),
+      UNIQUE KEY `username` (`username`)
+    );
+    """
+
+    # إنشاء جدول admin
+    create_admin_table = """
+    CREATE TABLE IF NOT EXISTS `admin` (
+      `id` int NOT NULL AUTO_INCREMENT,
+      `username` varchar(100) NOT NULL,
+      `password` varchar(255) NOT NULL,
+      `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (`id`),
+      UNIQUE KEY `username` (`username`)
+    );
+    """
+
+    # إنشاء جدول results
+    create_results_table = """
+    CREATE TABLE IF NOT EXISTS `results` (
+      `id` int NOT NULL AUTO_INCREMENT,
+      `user_id` int NOT NULL,
+      `side_one_score` int DEFAULT NULL,
+      `side_two_score` int DEFAULT NULL,
+      `side_three_score` int DEFAULT NULL,
+      `side_four_score` int DEFAULT NULL,
+      `side_fifth_score` int DEFAULT NULL,
+      `total_score` int DEFAULT NULL,
+      `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+      `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      PRIMARY KEY (`id`),
+      FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+    );
+    """
+
+    try:
+        cursor.execute(create_users_table)
+        cursor.execute(create_admin_table)
+        cursor.execute(create_results_table)
+        connection.commit()
+    except Error as e:
+        messagebox.showerror("خطأ", e)
+    finally:
+        cursor.close()
+        connection.close()
+
+create_tables()
 
 class LoginWindow:
     def __init__(self, master):

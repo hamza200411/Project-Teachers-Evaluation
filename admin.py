@@ -4,15 +4,124 @@ from tkinter import messagebox
 import mysql.connector
 from mysql.connector import Error
 import customtkinter as ctk
+import configparser
 
-from main import database_connection, load_database
+def load_database():
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    return {
+        'host': config['database']['host'],
+        'port': config['database'].getint('port'),
+        'user': config['database']['user'],
+        'password': config['database']['password'],
+        'database': config['database']['database']
+    }
+
+
+def database_connection():
+    db_config = load_database()
+    return mysql.connector.connect(
+        host=db_config['host'],
+        port=db_config['port'],
+        user=db_config['user'],
+        password=db_config['password'],
+        database=db_config['database']
+    )
+
+def create_tables():
+    connection = database_connection()
+    cursor = connection.cursor()
+
+    # إنشاء جدول users
+    create_users_table = """
+    CREATE TABLE IF NOT EXISTS `users` (
+      `id` int NOT NULL AUTO_INCREMENT,
+      `fullname` varchar(100) NOT NULL,
+      `username` varchar(100) NOT NULL,
+      `college` varchar(255) DEFAULT NULL,
+      `department` varchar(100) DEFAULT NULL,
+      `password` varchar(255) NOT NULL,
+      `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+      `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      PRIMARY KEY (`id`),
+      UNIQUE KEY `username` (`username`)
+    );
+    """
+
+    # إنشاء جدول admin
+    create_admin_table = """
+    CREATE TABLE IF NOT EXISTS `admin` (
+      `id` int NOT NULL AUTO_INCREMENT,
+      `username` varchar(100) NOT NULL,
+      `password` varchar(255) NOT NULL,
+      `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (`id`),
+      UNIQUE KEY `username` (`username`)
+    );
+    """
+
+    # إنشاء جدول results
+    create_results_table = """
+    CREATE TABLE IF NOT EXISTS `results` (
+      `id` int NOT NULL AUTO_INCREMENT,
+      `user_id` int NOT NULL,
+      `side_one_score` int DEFAULT NULL,
+      `side_two_score` int DEFAULT NULL,
+      `side_three_score` int DEFAULT NULL,
+      `side_four_score` int DEFAULT NULL,
+      `side_fifth_score` int DEFAULT NULL,
+      `total_score` int DEFAULT NULL,
+      `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+      `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      PRIMARY KEY (`id`),
+      FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+    );
+    """
+
+    try:
+        cursor.execute(create_users_table)
+        cursor.execute(create_admin_table)
+        cursor.execute(create_results_table)
+        connection.commit()
+    except Error as e:
+        messagebox.showerror("خطأ", e)
+    finally:
+        cursor.close()
+        connection.close()
+
+
+create_tables()
+
+def insert_admin():
+    try:
+        connection = database_connection()
+        cursor = connection.cursor()
+
+        cursor.execute("SELECT * FROM admin where username = 'hamza'")
+        user = cursor.fetchone()
+        if user:
+            return
+        else:
+            insert_user = """
+            INSERT INTO admin (username, password) VALUES ('hamza', '123');
+            """
+            cursor.execute(insert_user)
+            connection.commit()
+
+    except Error as e:
+        messagebox.showerror("خطأ", e)
+    finally:
+        cursor.close()
+        connection.close()
+
+insert_admin()
 
 class loginwindow:
     def __init__(self, master):
         self.master = master
         self.master.title("تسجيل دخول المشرف")
         self.master.config(bg='#141E46')
-        self.master.geometry("360x340")
+        self.master.geometry("360x340+600+200")
         self.master.resizable(False, False)
 
         self.login_frame = tk.Frame(master, bg='#141E46')
@@ -39,9 +148,9 @@ class loginwindow:
         self.login_button.pack(pady=10, padx=10)
 
         self.db = database_connection()
+        self.cursor = self.db.cursor()
 
         def handle_login():
-            self.cursor = self.db.cursor()
             username = self.username_entry.get()
             password = self.password_entry.get()
 
@@ -63,11 +172,6 @@ class loginwindow:
                 messagebox.showerror("Error", f"Error, Please connect to the internet \n {e}")
                 print("Error while connecting to MySQL", e)
 
-            finally:
-                if self.db.is_connected():
-                    self.cursor.close()
-                    self.db.close()
-
         self.login_button.config(command=handle_login)
 
 class Admin_Window(ctk.CTkToplevel):
@@ -75,7 +179,7 @@ class Admin_Window(ctk.CTkToplevel):
         super().__init__(master)
         self.loginwindow = loginwindow
         self.title('المشرف')
-        self.geometry('600x400')
+        self.geometry('600x400+500+200')
         self.rowconfigure((0, 2, 3, 4, 5), weight=1)
         self.columnconfigure((0, 1, 2, 3, 4, 5), weight=1)
         self.config(bg='#141E46')
@@ -120,13 +224,14 @@ class new_teacher(ctk.CTkToplevel):
         super().__init__(Admin_Window)
         self.Admin_Window = Admin_Window
         self.config(bg='#141E46')
-        self.geometry("440x390")
+        self.geometry("440x390+600+200")
         self.resizable(False, False)
         self.title("تسجيل تدريسي جديد")
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
 
         self.db = database_connection()
+        self.cursor = self.db.cursor()
 
         register_frame = tk.Frame(self, bg='#141E46')
         register_frame.grid(row=0, column=0)
@@ -233,7 +338,7 @@ class show_teachers(ctk.CTkToplevel):
         super().__init__(Admin_Window)
         self.Admin_Window = Admin_Window
         self.config(bg='#141E46')
-        self.geometry("650x400")
+        self.geometry("650x400+600+200")
         self.resizable(False, False)
         self.title("قاعدة بيانات التدريسين")
         # self.rowconfigure(1, weight=1)
@@ -271,7 +376,6 @@ class show_teachers(ctk.CTkToplevel):
             self.tree.insert('', 'end', values=record)
 
         def search_for_teacher():
-            self.cursor = self.db.cursor()
             self.search = self.search_entry.get()
             self.cursor.execute("SELECT * FROM users WHERE fullname LIKE %s", ('%' + self.search + '%',))
             records = self.cursor.fetchall()
@@ -303,11 +407,11 @@ class show_results(ctk.CTkToplevel):
         super().__init__(Admin_Window)
         self.Admin_Window = Admin_Window
         self.config(bg="#141E46")
-        self.geometry("940x400")
+        self.geometry("1050x400+600+200")
         self.resizable(False, False)
         self.title("عرض تقييم التدريسيين")
-        self.db = database_connection()
 
+        self.db = database_connection()
         self.cursor = self.db.cursor()
         self.cursor.execute("SELECT * FROM results")
         records = self.cursor.fetchall()
@@ -329,15 +433,16 @@ class show_results(ctk.CTkToplevel):
         self.tree_frame = tk.Frame(self, bg='#141E46')
         self.tree_frame.grid(row=1, column=0)
 
-        self.tree = ttk.Treeview(self.tree_frame, columns=(1, 2, 4, 5, 6, 7, 8), show='headings', height=10)
+        self.tree = ttk.Treeview(self.tree_frame, columns=(1, 2, 4, 5, 6, 7, 8, 9), show='headings', height=10)
         self.tree.grid(row=0, column=0)
         self.tree.heading(1, text='ID')
-        self.tree.heading(2, text='اسم المستخدم')
+        self.tree.heading(2, text='User ID')
         self.tree.heading(4, text='المحور الاول')
         self.tree.heading(5, text='المحور الثاني')
         self.tree.heading(6, text='المحور الثالث')
         self.tree.heading(7, text='المحور الرابع')
-        self.tree.heading(8, text='النتيجة النهائية')
+        self.tree.heading(8, text='المحور الخامس')
+        self.tree.heading(9, text='النتيجة النهائية')
 
         for record in records:
             self.tree.insert('', 'end', values=record)
@@ -345,11 +450,10 @@ class show_results(ctk.CTkToplevel):
         def search_for_result():
             self.cursor = self.db.cursor()
             self.search = self.search_entry.get()
-            username = self.search_entry.get()
             self.cursor.execute("SELECT * FROM results WHERE results.user_id LIKE %s", ('%' + self.search + '%',))
             records = self.cursor.fetchall()
             if records == []:
-                messagebox.showinfo('Not Found', 'No record found')
+                messagebox.showinfo('لا يوجد نتائج', 'لا يوجد نتائج')
             else:
                 for i in self.tree.get_children():
                     self.tree.delete(i)
