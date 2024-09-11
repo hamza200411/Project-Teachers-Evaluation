@@ -95,7 +95,7 @@ class LoginWindow:
     def __init__(self, master):
         self.master = master
         self.master.title("نظام تقييم الاداء الالكتروني")
-        self.master.geometry('400x350+600+200')
+        self.master.geometry('450x450+600+200')
         self.master.resizable(False, False)
         
 
@@ -310,7 +310,7 @@ class FirstSidewindow(ctk.CTkToplevel):
         super().__init__(master)
         self.login_window = login_window
         self.db = login_window.db
-        self.geometry("900x640+350+30")
+        self.geometry("1150x750+300+20")
         self.title("المحور الاول")
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
@@ -339,11 +339,11 @@ class FirstSidewindow(ctk.CTkToplevel):
         lab3check.place(x=850, y=150)
 
         lab4 = tk.Label(self, text="الدراسات العليا", font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab4.place(x=730, y=150)
+        lab4.place(x=700, y=150)
 
         self.one_lab4var = tk.BooleanVar()
         lab4check = tk.Checkbutton(self, variable=self.one_lab4var)
-        lab4check.place(x=690, y=150)
+        lab4check.place(x=660, y=150)
 
         lab5 = tk.Label(self, text="5د/مقرر فصليالدراسات الاولية", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab5.place(x=890, y=200)
@@ -353,13 +353,14 @@ class FirstSidewindow(ctk.CTkToplevel):
         lab5check.place(x=850, y=200)
 
         lab6 = tk.Label(self, text="الدراسات العليا", font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab6.place(x=730, y=200)
+        lab6.place(x=700, y=200)
 
         self.one_lab6var = tk.BooleanVar()
         lab6check = tk.Checkbutton(self, variable=self.one_lab6var)
-        lab6check.place(x=690, y=200)
+        lab6check.place(x=660, y=200)
 
-        lab7 = tk.Label(self, text="للتدريسي الاداري والمتفرغين جزئيا لاغراض الدراسة", font=("thesans", 15), fg="#41B06E", bg="#141E46")
+        lab7 = tk.Label(self, text="للتدريسي الاداري والمتفرغين جزئيا لاغراض الدراسة", font=("thesans", 15),
+                        fg="#41B06E", bg="#141E46")
         lab7.place(x=755, y=250)
 
         lab8 = tk.Label(self, text="20د/مقرر سنويا لدراسات الاولية", font=("thesans", 15), fg="#fff", bg="#141E46")
@@ -370,11 +371,11 @@ class FirstSidewindow(ctk.CTkToplevel):
         lab8check.place(x=850, y=300)
 
         lab9 = tk.Label(self, text="الدراسات العليا", font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab9.place(x=730, y=300)
+        lab9.place(x=700, y=300)
 
         self.one_lab9var = tk.BooleanVar()
         lab9check = tk.Checkbutton(self, variable=self.one_lab9var)
-        lab9check.place(x=690, y=300)
+        lab9check.place(x=660, y=300)
 
         lab10 = tk.Label(self, text="10د/مقرر فصلي الدراسات الاولية", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab10.place(x=890, y=350)
@@ -384,11 +385,11 @@ class FirstSidewindow(ctk.CTkToplevel):
         lab10check.place(x=850, y=350)
 
         lab11 = tk.Label(self, text="الدراسات العليا", font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab11.place(x=730, y=350)
+        lab11.place(x=700, y=350)
 
         self.one_lab11var = tk.BooleanVar()
         lab11check = tk.Checkbutton(self, variable=self.one_lab11var)
-        lab11check.place(x=690, y=350)
+        lab11check.place(x=660, y=350)
 
         lab12 = tk.Label(self,
                          text="يعتمد كل (2) نشاط (رياضي , فني, كشفي, ثقافي ) مادة دراسية واحدةلتدريسي النشاطات الطلابية",
@@ -402,11 +403,11 @@ class FirstSidewindow(ctk.CTkToplevel):
 
         lab14 = tk.Label(self, text="(20د):80%فأكثر(16د):70-79%(12د):60-69%(8د):50-59%(4د):دون ذلك",
                          font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab14.place(x=510, y=500)
+        lab14.place(x=640, y=500)
 
         self.one_lab14var = tk.IntVar()
         lab14combo = ttk.Combobox(self, values=[50, 60, 70, 80], textvariable=self.one_lab14var)
-        lab14combo.place(x=350, y=505)
+        lab14combo.place(x=490, y=505)
 
         lab15 = tk.Label(self,
                          text="التعليم المدمج:طرائق التدريس والوسائل الحديثة في ايصال المعلومات والمعارف والمهارات من منصات الكترونية ما هي",
@@ -422,12 +423,13 @@ class FirstSidewindow(ctk.CTkToplevel):
         lab16chek = tk.Checkbutton(self, variable=self.one_lab16var)
         lab16chek.place(x=450, y=600)
 
-        lab17 = tk.Label(self, text="يستخدم الامثلة التوضيحية والتطبيقية لأثراء المادة التعليمية", font=("thesans", 15), fg="#fff", bg="#141E46")
+        lab17 = tk.Label(self, text="يستخدم الامثلة التوضيحية والتطبيقية لأثراء المادة التعليمية", font=("thesans", 15),
+                         fg="#fff", bg="#141E46")
         lab17.place(x=730, y=650)
 
         self.one_lab17var = tk.BooleanVar()
         lab17chek = tk.Checkbutton(self, variable=self.one_lab17var)
-        lab17chek.place(x=700, y=650)
+        lab17chek.place(x=450, y=650)
 
         lab18 = tk.Label(self, text="يستخدم وسائل الإيضاح او عرض افلام علمية متخصصة او اي وسيلة اخرى.",
                          font=("thesans", 15), fg="#fff", bg="#141E46")
@@ -435,7 +437,7 @@ class FirstSidewindow(ctk.CTkToplevel):
 
         self.one_lab18var = tk.BooleanVar()
         lab18chek = tk.Checkbutton(self, variable=self.one_lab18var)
-        lab18chek.place(x=550, y=700)
+        lab18chek.place(x=450, y=700)
 
         lab19 = tk.Label(self, text="ينشر محاضراته وفعالياته العلمية على الموقع الالكتروني (على ان لا تقل عن10محاضرات)",
                          font=("thesans", 15), fg="#fff", bg="#141E46")
@@ -443,15 +445,16 @@ class FirstSidewindow(ctk.CTkToplevel):
 
         self.one_lab19var = tk.BooleanVar()
         lab19chek = tk.Checkbutton(self, variable=self.one_lab19var)
-        lab19chek.place(x=470, y=750)
+        lab19chek.place(x=450, y=750)
 
-        lab20 = tk.Label(self, text="يستخدم المنصات الالكترونية للتواصل مع الطلبة مثل Edmodo, Moodle, Google Class room",
+        lab20 = tk.Label(self,
+                         text="يستخدم المنصات الالكترونية للتواصل مع الطلبة مثل Edmodo, Moodle, Google Class room",
                          font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab20.place(x=420, y=800)
+        lab20.place(x=480, y=800)
 
         self.one_lab20var = tk.BooleanVar()
         lab20chek = tk.Checkbutton(self, variable=self.one_lab20var)
-        lab20chek.place(x=370, y=800)
+        lab20chek.place(x=450, y=800)
 
         lab21 = tk.Label(self, text="يستخدم الطرائق والوسائل الحديثةالمستخدمة في التعليم الالكتروني",
                          font=("thesans", 15), fg="#fff", bg="#141E46")
@@ -459,28 +462,29 @@ class FirstSidewindow(ctk.CTkToplevel):
 
         self.one_lab21var = tk.BooleanVar()
         lab21chek = tk.Checkbutton(self, variable=self.one_lab21var)
-        lab21chek.place(x=550, y=840)
+        lab21chek.place(x=450, y=840)
 
-        button_complate = tk.Button(self, text="تكملة المحور الاول", command=self.comp, font=("thesans", 16), fg="#fff", bg="#ff6600")
+        button_complate = tk.Button(self, text="تكملة المحور الاول", command=self.comp, font=("thesans", 16), fg="#fff",
+                                    bg="#ff6600")
         button_complate.pack(side='bottom', pady=10)
 
     def comp(self):
         self.withdraw()
         self.new_window = ctk.CTkToplevel(self)
         self.new_window.title("تكملة المحور الاول")
-        self.new_window.resizable(False, False)
 
-        self.new_window.geometry("910x400+350+30")
+        self.new_window.geometry("1100x600+300+20")
         self.new_window.title(" المحور الاول")
         self.new_window.rowconfigure(0, weight=1)
         self.new_window.columnconfigure(0, weight=1)
         self.new_window.config(bg='#141E46')
 
-        lab1 = tk.Label(self.new_window, text="الاساليب المستعملة في تقييم الطلبة", font=("thesans", 15, "bold"), fg="#41B06E", bg="#141E46")
-        lab1.place(x=850, y=30)
+        lab1 = tk.Label(self.new_window, text="الاساليب المستعملة في تقييم الطلبة", font=("thesans", 15, "bold"),
+                        fg="#41B06E", bg="#141E46")
+        lab1.place(x=830, y=30)
 
         lab2 = tk.Label(self.new_window,
-                        text="يستخدم اساليب متنوعة لتقيم اداء الطلبة مثل اختبارات تحريرية , شفوية ,ادائية , تقارير الكترونية ,انشطة الكترونية و ",
+                        text="يستخدم اساليب متنوعة لتقيم اداء الطلبة مثل اختبارات تحريرية , شفوية ,ادائية , تقارير الكترونية ,انشطة الكترونية  ",
                         font=("thesans", 15), fg="#fff", bg="#141E46")
         lab2.place(x=330, y=100)
 
@@ -506,10 +510,12 @@ class FirstSidewindow(ctk.CTkToplevel):
         lab4chk = tk.Checkbutton(self.new_window, variable=self.new_window.one_lab24var)
         lab4chk.place(x=300, y=200)
 
-        lab5 = tk.Label(self.new_window, text="وصف المقرر الدراسي وتحديثه-موجود:", font=("thesans", 15, "bold"), fg="#41B06E", bg="#141E46")
+        lab5 = tk.Label(self.new_window, text="وصف المقرر الدراسي وتحديثه-موجود:", font=("thesans", 15, "bold"),
+                        fg="#41B06E", bg="#141E46")
         lab5.place(x=800, y=250)
 
-        lab6 = tk.Label(self.new_window, text=" يقدم وصف المقرر الدراسي في بداية العام الدراسي", font=("thesans", 15), fg="#fff", bg="#141E46")
+        lab6 = tk.Label(self.new_window, text=" يقدم وصف المقرر الدراسي في بداية العام الدراسي", font=("thesans", 15),
+                        fg="#fff", bg="#141E46")
         lab6.place(x=330, y=300)
 
         self.new_window.one_lab26var = tk.BooleanVar()
@@ -654,7 +660,7 @@ class SecondSidewindow(ctk.CTkToplevel):
         super().__init__(master)
         self.login_window = login_window
         self.db = login_window.db
-        self.geometry("980x600+350+30")
+        self.geometry("1200x750+300+10")
         self.title(" المحور الثاني")
         self.config(bg='#141E46')
 
@@ -756,165 +762,182 @@ class SecondSidewindow(ctk.CTkToplevel):
         lab16chk = tk.Checkbutton(self, variable=self.lab16var)
         lab16chk.place(x=50, y=420)
 
-        lab17 = tk.Label(self, text="المشاركة في المؤتمرات \n العلمية", font=("thesans", 15), fg="#41B06E", bg="#141E46")
-        lab17.place(x=900, y=500)
+        # مشاركة في المؤتمرات العلمية
 
-        lab18 = tk.Label(self, text="الندوات", font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab18.place(x=900, y=580)
+        lab17 = tk.Label(self, text="المشاركة في الموتمرات العلمية كمحاضر, بحث منفرد خارج العراق دولي عالمي",
+                         font=("thesans", 15), fg="#41B06E", bg="#141E46")
+        lab17.place(x=800, y=400)
 
-        lab19 = tk.Label(self, text="الدورات التدريبية", font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab19.place(x=900, y=660)
+        lab18 = tk.Label(self, text="المشاركة في الموتمرات العلمية كمحاضر, بحث منفرد داخل العراق  ",
+                         font=("thesans", 15), fg="#fff", bg="#141E46")
+        lab18.place(x=800, y=440)
 
-        lab20 = tk.Label(self, text="ورش عمل", font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab20.place(x=900, y=720)
+        lab19 = tk.Label(self, text=" المشاركة في الموتمرات العلمية كحضور,   خارج العراق دولي عالمي",
+                         font=("thesans", 15), fg="#fff", bg="#141E46")
+        lab19.place(x=800, y=480)
 
-        lab21 = tk.Label(self, text="عدد كمحاضر", font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab21.place(x=750, y=450)
+        lab20 = tk.Label(self, text="المشاركة في الموتمرات العلمية كحضور, بحث منفرد داخل العراق  ",
+                         font=("thesans", 15), fg="#fff", bg="#141E46")
+        lab20.place(x=800, y=520)
 
-        lab22 = tk.Label(self, text="دولي عالمي\nخارج العراق", font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab22.place(x=630, y=450)
+        lab21 = tk.Label(self, text="المشاركة في الموتمرات العلمية كمحاضر, بحث مشترك خارج العراق دولي عالم",
+                         font=("thesans", 15), fg="#fff", bg="#141E46")
+        lab21.place(x=800, y=560)
 
-        lab23 = tk.Label(self, text="داخل العراق", font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab23.place(x=520, y=450)
+        lab22 = tk.Label(self, text="المشاركة في الموتمرات العلمية كمحاضر, بحث مشترك داخل العراق  ",
+                         font=("thesans", 15), fg="#fff", bg="#141E46")
+        lab22.place(x=800, y=600)
 
-        lab24 = tk.Label(self, text="عدد كحضور", font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab24.place(x=420, y=450)
+        lab23 = tk.Label(self, text="ندوات كحضور خارج العراق دولي عالمي", font=("thesans", 15), fg="#fff", bg="#141E46")
+        lab23.place(x=800, y=640)
 
-        lab25 = tk.Label(self, text="دولي عالمي\nخارج العراق", font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab25.place(x=330, y=450)
+        lab24 = tk.Label(self, text="ندوات كحضور داخل العراق  ", font=("thesans", 15), fg="#fff", bg="#141E46")
+        lab24.place(x=900, y=700)
 
-        lab26 = tk.Label(self, text="داخل العراق", font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab26.place(x=220, y=470)
+        lab25 = tk.Label(self, text="الموتمرات العلمية بوستر دولي عالمي خارج العراق", font=("thesans", 15), fg="#fff",
+                         bg="#141E46")
+        lab25.place(x=900, y=740)
 
-        lab27 = tk.Label(self, text="الموتمرات العلمية \nبحث منفرد", font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab27.place(x=750, y=500)
+        lab26 = tk.Label(self, text="الموتمرات العلمية بوستر  داخل العراق", font=("thesans", 15), fg="#fff",
+                         bg="#141E46")
+        lab26.place(x=900, y=780)
 
-        lab28 = tk.Label(self, text="الموتمرات العلمية \nبحث مشترك", font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab28.place(x=750, y=570)
+        lab27 = tk.Label(self, text=" الدورات التدريبية كحضور دولي عالمي خارج العراق", font=("thesans", 15), fg="#fff",
+                         bg="#141E46")
+        lab27.place(x=900, y=820)
 
-        lab29 = tk.Label(self, text="الموتمرات العلمية بوستر ", font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab29.place(x=700, y=650)
+        lab28 = tk.Label(self, text="الدورات التدريبية كحضور   داخل العراق", font=("thesans", 15), fg="#fff",
+                         bg="#141E46")
+        lab28.place(x=900, y=860)
 
-        lab30 = tk.Label(self, text="الندوات", font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab30.place(x=700, y=700)
+        lab29 = tk.Label(self, text=" الندوات كمحاضر دولي عالمي خارج العراق", font=("thesans", 15), fg="#fff",
+                         bg="#141E46")
+        lab29.place(x=300, y=500)
 
-        lab31 = tk.Label(self, text="الدورات التدريبية", font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab31.place(x=700, y=730)
+        lab30 = tk.Label(self, text="الندوات كمحاضر  داخل العراق", font=("thesans", 15), fg="#fff", bg="#141E46")
+        lab30.place(x=300, y=540)
 
-        lab32 = tk.Label(self, text="ورش عمل", font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab32.place(x=700, y=770)
+        lab31 = tk.Label(self, text="الدورات التدريبية كمحاضر دولي عالمي خارج العراق", font=("thesans", 15), fg="#fff",
+                         bg="#141E46")
+        lab31.place(x=300, y=580)
 
-        lab33 = tk.Label(self, text="الموتمرات العلمية", font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab33.place(x=420, y=520)
+        lab32 = tk.Label(self, text="الدورات التدريبية كمحاضر داحل العراق", font=("thesans", 15), fg="#fff",
+                         bg="#141E46")
+        lab32.place(x=300, y=620)
 
-        lab34 = tk.Label(self, text="الندوات", font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab34.place(x=420, y=600)
+        lab33 = tk.Label(self, text="ورش العمل كمحاضر دولي عالمي خارج العراق", font=("thesans", 15), fg="#fff",
+                         bg="#141E46")
+        lab33.place(x=300, y=660)
 
-        lab35 = tk.Label(self, text="الدورات التدريبية", font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab35.place(x=420, y=670)
+        lab34 = tk.Label(self, text="ورش العمل كمحاضر داحل العراق", font=("thesans", 15), fg="#fff", bg="#141E46")
+        lab34.place(x=300, y=700)
 
-        lab36 = tk.Label(self, text="ورش العمل", font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab36.place(x=420, y=750)
+        lab35 = tk.Label(self, text="ورش العمل كحضور  دولي عالمي خارج العراق ", font=("thesans", 15), fg="#fff",
+                         bg="#141E46")
+        lab35.place(x=300, y=740)
+
+        lab36 = tk.Label(self, text="ورش العمل كحضور  داحل العراق", font=("thesans", 15), fg="#fff", bg="#141E46")
+        lab36.place(x=300, y=780)
 
         # موتمرات علمية دولي عالمي خارج العرق بحث منفرد
         self.lab17var = tk.BooleanVar()
         lab17chk = tk.Checkbutton(self, variable=self.lab17var)
-        lab17chk.place(x=650, y=520)
+        lab17chk.place(x=750, y=410)
 
         # داخل العراق
         self.lab18var = tk.BooleanVar()
         lab18chk = tk.Checkbutton(self, variable=self.lab18var)
-        lab18chk.place(x=550, y=520)
+        lab18chk.place(x=750, y=450)
 
         # عدد حضور مةتمرات علمية دولي عالمي
         self.lab19var = tk.IntVar()
         lab19chk = tk.Checkbutton(self, variable=self.lab19var)
-        lab19chk.place(x=350, y=520)
+        lab19chk.place(x=750, y=480)
 
         # داخل العراق
         self.lab20var = tk.IntVar()
         lab20chk = tk.Checkbutton(self, variable=self.lab20var)
-        lab20chk.place(x=230, y=520)
+        lab20chk.place(x=750, y=520)
 
         # محاضر موتمرات علمية بحث مشترك دولي عالمي خارجالعراق
         self.lab21var = tk.BooleanVar()
         lab21chk = tk.Checkbutton(self, variable=self.lab21var)
-        lab21chk.place(x=650, y=600)
+        lab21chk.place(x=750, y=560)
 
         # محاضر موتمرات علمية بحث مشترك   داخل العراق
         self.lab22var = tk.BooleanVar()
         lab22chk = tk.Checkbutton(self, variable=self.lab22var)
-        lab22chk.place(x=550, y=600)
+        lab22chk.place(x=750, y=600)
 
         # حضور ندوات دولي حارج العراق
         self.lab23var = tk.BooleanVar()
         lab23chk = tk.Checkbutton(self, variable=self.lab23var)
-        lab23chk.place(x=350, y=600)
+        lab23chk.place(x=750, y=640)
 
         # حضور ندوات دولي داخل العراق
         self.lab24var = tk.BooleanVar()
         lab23chk = tk.Checkbutton(self, variable=self.lab24var)
-        lab23chk.place(x=230, y=600)
+        lab23chk.place(x=850, y=710)
 
         # محاضر موتمرات علمية بوستر دولي خارج العراق
         self.lab25var = tk.BooleanVar()
         lab24chk = tk.Checkbutton(self, variable=self.lab25var)
-        lab24chk.place(x=650, y=650)
+        lab24chk.place(x=850, y=750)
 
         # محاضر موتمرات علمية بوستر  داخل العراق
         self.lab26var = tk.BooleanVar()
         lab25chk = tk.Checkbutton(self, variable=self.lab26var)
-        lab25chk.place(x=550, y=650)
+        lab25chk.place(x=850, y=790)
 
         # حضور دورات تدريبة خارج العراق
         self.lab27var = tk.BooleanVar()
         lab26chk = tk.Checkbutton(self, variable=self.lab27var)
-        lab26chk.place(x=350, y=670)
+        lab26chk.place(x=850, y=830)
 
         # حضور دورات تدريبة داخل العراق
         self.lab28var = tk.BooleanVar()
         lab27chk = tk.Checkbutton(self, variable=self.lab28var)
-        lab27chk.place(x=230, y=670)
+        lab27chk.place(x=850, y=870)
 
         # محاضر ندوات دولي
         self.lab29var = tk.BooleanVar()
         lab28chk = tk.Checkbutton(self, variable=self.lab29var)
-        lab28chk.place(x=650, y=700)
+        lab28chk.place(x=270, y=510)
 
         # محاضر ندوات داخل
         self.lab30var = tk.BooleanVar()
         lab29chk = tk.Checkbutton(self, variable=self.lab30var)
-        lab29chk.place(x=550, y=700)
+        lab29chk.place(x=270, y=550)
 
         # محاضر دورات تدريبية دولي
         self.lab31var = tk.BooleanVar()
         lab30chk = tk.Checkbutton(self, variable=self.lab31var)
-        lab30chk.place(x=650, y=730)
+        lab30chk.place(x=270, y=590)
 
         # محاضر دورات تدريبية داخل
         self.lab32var = tk.BooleanVar()
         lab31chk = tk.Checkbutton(self, variable=self.lab32var)
-        lab31chk.place(x=550, y=730)
+        lab31chk.place(x=270, y=630)
 
         # محاضر ورش عمل دولي
         self.lab33var = tk.BooleanVar()
         lab32chk = tk.Checkbutton(self, variable=self.lab33var)
-        lab32chk.place(x=650, y=760)
+        lab32chk.place(x=270, y=670)
 
         # محاضر ورش عمل داخل
         self.lab34var = tk.BooleanVar()
         lab33chk = tk.Checkbutton(self, variable=self.lab34var)
-        lab33chk.place(x=550, y=760)
+        lab33chk.place(x=270, y=710)
 
         # حضور ورش عمل حارج دولي عالمي
         self.lab35var = tk.BooleanVar()
         lab34chk = tk.Checkbutton(self, variable=self.lab35var)
-        lab34chk.place(x=350, y=760)
+        lab34chk.place(x=270, y=750)
 
-        # حضور ورش عمل حارج دولي عالمي
+        # حضور ورش عمل خارج دولي عالمي
         self.lab35var = tk.BooleanVar()
         lab35chk = tk.Checkbutton(self, variable=self.lab35var)
-        lab35chk.place(x=230, y=760)
+        lab35chk.place(x=270, y=790)
 
         btgo = tk.Button(self, text="تكملة المحور الثاني", command=self.comp2, font=("thesans", 16), fg="#fff", bg="#ff6600")
         btgo.pack(side='bottom', pady=10)
@@ -924,7 +947,7 @@ class SecondSidewindow(ctk.CTkToplevel):
 
         self.new_window2 = ctk.CTkToplevel(self)
         self.new_window2.title("تكملة المحور الثاني")
-        self.new_window2.geometry("850x600+350+30")
+        self.new_window2.geometry("1100x700+350+30")
         self.new_window2.config(bg='#141E46')
 
         lab1 = tk.Label(self.new_window2, text="المساهمة في خدمة الموسسات العلمية خارج وزارة التعليم",
@@ -969,34 +992,37 @@ class SecondSidewindow(ctk.CTkToplevel):
         lab7chk.place(x=750, y=120)
 
         lab8 = tk.Label(self.new_window2, text="لقاء صحفي", font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab8.place(x=800, y=170)
+        lab8.place(x=780, y=170)
         self.new_window2.lab42var = tk.BooleanVar()
         lab8chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab42var)
-        lab8chk.place(x=750, y=170)
+        lab8chk.place(x=730, y=170)
 
         lab9 = tk.Label(self.new_window2, text="نشر مقالة في مجلة", font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab9.place(x=800, y=220)
+        lab9.place(x=700, y=220)
         self.new_window2.lab43var = tk.BooleanVar()
         lab9chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab43var)
-        lab9chk.place(x=750, y=220)
+        lab9chk.place(x=650, y=220)
 
-        lab10 = tk.Label(self.new_window2, text="زيارة دار الايتام والمسنين", font=("thesans", 15), fg="#fff", bg="#141E46")
+        lab10 = tk.Label(self.new_window2, text="زيارة دار الايتام والمسنين", font=("thesans", 15), fg="#fff",
+                         bg="#141E46")
         lab10.place(x=500, y=70)
         self.new_window2.lab44var = tk.BooleanVar()
         lab10chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab44var)
         lab10chk.place(x=450, y=70)
 
-        lab11 = tk.Label(self.new_window2, text="خدمة المستشفيات التعليمية", font=("thesans", 15), fg="#fff", bg="#141E46")
+        lab11 = tk.Label(self.new_window2, text="خدمة المستشفيات التعليمية", font=("thesans", 15), fg="#fff",
+                         bg="#141E46")
         lab11.place(x=500, y=120)
         self.new_window2.lab45var = tk.BooleanVar()
         lab11chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab45var)
         lab11chk.place(x=450, y=120)
 
-        lab12 = tk.Label(self.new_window2, text="خدمةالمؤسسات الخدميةاوالانتاجية الحكومية", font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab12.place(x=450, y=170)
+        lab12 = tk.Label(self.new_window2, text="خدمةالمؤسسات الخدميةاوالانتاجية الحكومية", font=("thesans", 15),
+                         fg="#fff", bg="#141E46")
+        lab12.place(x=320, y=170)
         self.new_window2.lab46var = tk.BooleanVar()
         lab12chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab46var)
-        lab12chk.place(x=400, y=170)
+        lab12chk.place(x=270, y=170)
 
         lab13 = tk.Label(self.new_window2, text="اخرى:", font=("thesans", 15), fg="#fff", bg="#141E46")
         lab13.place(x=450, y=220)
@@ -1008,14 +1034,16 @@ class SecondSidewindow(ctk.CTkToplevel):
                          font=("thesans", 15), fg="#41B06E", bg="#141E46")
         lab14.place(x=530, y=280)
 
-        lab15 = tk.Label(self.new_window2, text="محاضر في التعليم المستمر", font=("thesans", 15), fg="#fff", bg="#141E46")
+        lab15 = tk.Label(self.new_window2, text="محاضر في التعليم المستمر", font=("thesans", 15), fg="#fff",
+                         bg="#141E46")
         lab15.place(x=900, y=340)
 
         self.new_window2.lab48var = tk.BooleanVar()
         lab15chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab48var)
         lab15chk.place(x=850, y=340)
 
-        lab16 = tk.Label(self.new_window2, text="دورات طرائق التدريس الحديثةفي التعليم المستمر", font=("thesans", 15), fg="#fff", bg="#141E46")
+        lab16 = tk.Label(self.new_window2, text="دورات طرائق التدريس الحديثةفي التعليم المستمر", font=("thesans", 15),
+                         fg="#fff", bg="#141E46")
         lab16.place(x=800, y=380)
         self.new_window2.lab49var = tk.BooleanVar()
         lab16chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab49var)
@@ -1027,11 +1055,12 @@ class SecondSidewindow(ctk.CTkToplevel):
         lab17chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab50var)
         lab17chk.place(x=550, y=340)
 
-        lab18 = tk.Label(self.new_window2, text="عضو لجنة الحلقات الثقافية والسمنار", font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab18.place(x=500, y=380)
+        lab18 = tk.Label(self.new_window2, text="عضو لجنة الحلقات الثقافية والسمنار", font=("thesans", 15), fg="#fff",
+                         bg="#141E46")
+        lab18.place(x=350, y=380)
         self.new_window2.lab51var = tk.BooleanVar()
         lab18chk = tk.Checkbutton(self.new_window2, variable=self.new_window2.lab51var)
-        lab18chk.place(x=450, y=380)
+        lab18chk.place(x=300, y=380)
 
         lab19 = tk.Label(self.new_window2,
                          text="المشاركة في الزيارات الميدانية او الحقلية او اجراء اختبارات  او تحليلات معملية او مختبرية",
@@ -1246,7 +1275,7 @@ class TherdSidewindow(ctk.CTkToplevel):
         super().__init__(master)
         self.login_window = login_window
         self.db = login_window.db
-        self.geometry("900x500+350+30")
+        self.geometry("1100x600+350+3")
         self.title(" المحور الثالث")
         self.config(bg='#141E46')
 
@@ -1297,16 +1326,16 @@ class TherdSidewindow(ctk.CTkToplevel):
         lab9chk.place(x=900, y=360)
 
         lab10 = tk.Label(self, text="وكيل وزير او رئيس جامعة", font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab10.place(x=700, y=360)
+        lab10.place(x=650, y=360)
         self.lab10var = tk.BooleanVar()
         lab10chk = tk.Checkbutton(self, variable=self.lab10var)
-        lab10chk.place(x=650, y=360)
+        lab10chk.place(x=600, y=360)
 
         lab11 = tk.Label(self, text="مساعد رئيس الجامعة او عميد", font=("thesans", 15), fg="#fff", bg="#141E46")
-        lab11.place(x=400, y=360)
+        lab11.place(x=330, y=360)
         self.lab11var = tk.BooleanVar()
         lab11chk = tk.Checkbutton(self, variable=self.lab11var)
-        lab11chk.place(x=350, y=360)
+        lab11chk.place(x=280, y=360)
 
         lab12 = tk.Label(self, text="مشاركته في الاعمال التطوعية داخل الجامعة او خارجها", font=("thesans", 15), fg="#41B06E", bg="#141E46")
         lab12.place(x=600, y=400)
@@ -1404,7 +1433,7 @@ class ForthSidewindow(ctk.CTkToplevel):
         super().__init__(master)
         self.login_window = login_window
         self.db = login_window.db
-        self.geometry("900x400+350+30")
+        self.geometry("1100x500+350+30")
         self.title(" المحور الرابع")
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
@@ -1495,7 +1524,7 @@ class fifthsidewindow(ctk.CTkToplevel):
         super().__init__(master)
         self.login_window = login_window
         self.db = login_window.db
-        self.geometry("650x400+350+30")
+        self.geometry("780x400+350+30")
         self.title(" المحور الخامس")
         self.config(bg="#141E46")
         self.resizable(0, 0)
