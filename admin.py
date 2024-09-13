@@ -97,13 +97,13 @@ def insert_admin():
         connection = database_connection()
         cursor = connection.cursor()
 
-        cursor.execute("SELECT * FROM admin where username = 'hamza'")
+        cursor.execute("SELECT * FROM admin where username = 'admin'")
         user = cursor.fetchone()
         if user:
             return
         else:
             insert_user = """
-            INSERT INTO admin (username, password) VALUES ('hamza', '123');
+            INSERT INTO admin (username, password) VALUES ('admin', '123');
             """
             cursor.execute(insert_user)
             connection.commit()
@@ -218,6 +218,17 @@ class Admin_Window(ctk.CTkToplevel):
         new_teacher_btn.config(command=lambda: move_to_new_teacher())
         view_teacher_btn.config(command=lambda: view_teachers())
         search_result_btn.config(command=lambda: view_results())
+
+        self.return_btn = tk.Button(self, text='تسجيل الخروج', bg='red', fg='white', font=('thesans', 15))
+        self.return_btn.grid(row=5, column=0, pady=10)
+
+        dev_label = tk.Label(self, text='تطوير وبرمجة: حمزة محمد , ليث صدام', bg='#141E46', fg='#41B06E', font=('thesans', 13))
+        dev_label.grid(row=5, column=5, pady=10)
+
+        def return_home():
+            self.master.deiconify()
+            self.destroy()
+        self.return_btn.config(command=lambda: return_home())
 
 class new_teacher(ctk.CTkToplevel):
     def __init__(self, Admin_Window):
@@ -366,11 +377,11 @@ class show_teachers(ctk.CTkToplevel):
 
         self.tree = ttk.Treeview(self.tree_frame, columns=(1, 2, 3, 4, 5), show='headings', height=10)
         self.tree.grid(row=0, column=0)
-        self.tree.heading(1, text='ID')
-        self.tree.heading(2, text='Full Name')
-        self.tree.heading(3, text='Username')
-        self.tree.heading(4, text='College')
-        self.tree.heading(5, text='Department')
+        self.tree.heading(1, text='رقم الهوية')
+        self.tree.heading(2, text='الاسم الكامل')
+        self.tree.heading(3, text='اسم المستخدم')
+        self.tree.heading(4, text='الكلية')
+        self.tree.heading(5, text='القسم')
 
         for record in records:
             self.tree.insert('', 'end', values=record)
