@@ -133,14 +133,12 @@ class loginwindow:
         self.username_label = tk.Label(self.login_frame, text="اسم المستخدم", bg='#141E46', fg="white", font=('thesans', 18))
         self.username_label.pack(pady=10, padx=10)
         self.username_var = tk.StringVar()
-        self.username_var.set('hamza')
         self.username_entry = tk.Entry(self.login_frame, textvariable=self.username_var, bd=1, relief='solid', font=('thesans', 18))
         self.username_entry.pack()
 
         self.password_label = tk.Label(self.login_frame, text="كلمة المرور", bg='#141E46', fg='white', font=('thesans', 18))
         self.password_label.pack(pady=10, padx=10)
         self.password_var = tk.StringVar()
-        self.password_var.set('123')
         self.password_entry = tk.Entry(self.login_frame, textvariable=self.password_var, bd=1, relief='solid', show='•', font=('thesans', 18))
         self.password_entry.pack()
 
@@ -155,7 +153,7 @@ class loginwindow:
             password = self.password_entry.get()
 
             if not username or not password:
-                messagebox.showerror("Error", "Enter both Username and Password")
+                messagebox.showerror("خطأ", "الرجاء ادخال اسم المستخدم وكلمة المرور")
                 return
 
             try:
@@ -166,11 +164,10 @@ class loginwindow:
                     self.master.withdraw()
                     adminwindow = Admin_Window(self.master, self)
                 else:
-                    messagebox.showerror("Login", "Invalid username or password")
+                    messagebox.showerror("تسجيل الدخول", "كلمة المرور او اسم المستخدم غير صحيح")
 
             except Error as e:
-                messagebox.showerror("Error", f"Error, Please connect to the internet \n {e}")
-                print("Error while connecting to MySQL", e)
+                messagebox.showerror("خطأ", f"الرجاء الاتصال بالانترنت \n {e}")
 
         self.login_button.config(command=handle_login)
 
@@ -183,6 +180,7 @@ class Admin_Window(ctk.CTkToplevel):
         self.rowconfigure((0, 2, 3, 4, 5), weight=1)
         self.columnconfigure((0, 1, 2, 3, 4, 5), weight=1)
         self.config(bg='#141E46')
+        self.resizable(False, False)
 
         shortcut_bar = tk.Frame(self, bg='#141E46')
         shortcut_bar.grid(row=0, column=0, sticky='n', columnspan=6, pady=4)
@@ -418,7 +416,7 @@ class show_results(ctk.CTkToplevel):
         super().__init__(Admin_Window)
         self.Admin_Window = Admin_Window
         self.config(bg="#141E46")
-        self.geometry("1050x400+600+200")
+        self.geometry("1050x400+500+200")
         self.resizable(False, False)
         self.title("عرض تقييم التدريسيين")
 
@@ -476,6 +474,25 @@ class show_results(ctk.CTkToplevel):
         self.return_btn = tk.Button(self.tree_frame, text='العودة الى الرئيسية', width=20, bg='#ff6600', fg='white',
                                     relief='flat', font=('thesans', 18))
         self.return_btn.grid(row=1, column=0, padx=5, pady=5)
+
+        self.delete_result = tk.Button(self.tree_frame, text='حذف النتيجة', width=20, bg='red', fg='white',
+                                    relief='flat', font=('thesans', 18))
+        self.delete_result.grid(row=2, column=0, padx=5, pady=5)
+
+        def delete_result():
+            try:
+                selected_result = self.tree.selection()[0]
+                item_data = self.tree.item(selected_result, 'values')
+                result_id = item_data[0]
+                self.tree.delete(selected_result)
+                self.cursor.execute("DELETE FROM results WHERE id=%s", (result_id,))
+                self.db.commit()
+
+                messagebox.showinfo('Success', 'تم حذف النتيجة بنجاح')
+            except IndexError:
+                messagebox.showerror('Error', 'يرجى اختيار نتيجة لحذفها')
+
+        self.delete_result.config(command=delete_result)
 
         def return_home():
             self.master.deiconify()
